@@ -16,7 +16,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreProtocolPNames;
+
+import com.chenxiaoyu.bbcoin.CoinStatus;
 
 import android.net.http.AndroidHttpClient;
 
@@ -36,31 +40,26 @@ public class Commu  {
         {
             for(Map.Entry<String, String> entry:map.entrySet())
             {
-                //解析Map传递的参数，使用一个键值对对象BasicNameValuePair保存。
                 list.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
             }
         }
         try {
-            //实现将请求 的参数封装封装到HttpEntity中。
             UrlEncodedFormEntity entity=new UrlEncodedFormEntity(list, encode);
-            //使用HttpPost请求方式
             HttpPost httpPost=new HttpPost(path);
-            //设置请求参数到Form中。
             httpPost.setEntity(entity);
-            //实例化一个默认的Http客户端，使用的是AndroidHttpClient
-            HttpClient client=AndroidHttpClient.newInstance("");
-            //执行请求，并获得响应数据
+            HttpClient client= new DefaultHttpClient();
+            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
+                    System.getProperty("Mozilla/5.0"));
+
             HttpResponse httpResponse= client.execute(httpPost);
-            //判断是否请求成功，为200时表示成功，其他均问有问题。
+
             if(httpResponse.getStatusLine().getStatusCode()==200)
             {
-                //通过HttpEntity获得响应流
                 InputStream inputStream=httpResponse.getEntity().getContent();
                 return changeInputStream(inputStream,encode);
             }
             
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
@@ -104,5 +103,16 @@ public class Commu  {
     		instance = new Commu();
     	}
     	return instance;
+    }
+    
+    final String URL_TRAD = "http://www.btc38.com//trade/getTradeList.php?coinname=";
+    public CoinStatus fetchCoinStatus(String coin){
+    	CoinStatus ret = null;
+    	String string = sendHttpClientPost(URL_TRAD+coin, null, "utf-8");
+    	
+    	if(string != null){
+    		ret = CoinStatus.parseJSON(string);
+    	}
+    	return ret;
     }
 }

@@ -1,34 +1,45 @@
 package com.chenxiaoyu.bbcoin;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONTokener;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.R.integer;
 
 public class CoinStatus {
 
-	List<Order> buyOrders, sellOrders;
+	public List<Order> buyOrders, sellOrders;
 	
+	public CoinStatus() {
+		
+	}
 	
 	public static CoinStatus parseJSON(String str)
 	{
-		CoinStatus retCoinStat
+		CoinStatus ret = new CoinStatus();
         try {
-            JSONObject jsonObject = new JSONObject(jsonString);          //创建JSONObject对象
-            JSONArray personArray = jsonObject.getJSONArray(key);        //获取JSONObject对象的值，该值是一个JSON数组
-            for(int i = 0; i < personArray.length(); i++) {
-                JSONObject personObject = personArray.getJSONObject(i);  //获得JSON数组中的每一个JSONObject对象
-                Person person = new Person();
-                int id = personObject.getInt("id");                      //获得每一个JSONObject对象中的键所对应的值
-                String name = personObject.getString("name");
-                int age = personObject.getInt("age");
-                person.setId(id);        //将解析出来的属性值存入Person对象
-                person.setName(name);
-                person.setAge(age);
-                list.add(person);        //将解析出来的每一个Person对象添加到List中
-            }
+            JSONObject jsonObject = new JSONObject(str);         
+            List<Order> buyOrders = parseOrders(jsonObject.getJSONArray("buyOrder"), Order.BUY);
+            List<Order> sellOrders = parseOrders(jsonObject.getJSONArray("sellOrder"), Order.SELL);
+            ret.buyOrders = buyOrders;
+            ret.sellOrders = sellOrders;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return list;
+        return ret;
+	}
+	static List<Order> parseOrders(JSONArray array, int type) throws JSONException{
+		List<Order> retList = new ArrayList<Order>();
+		for(int i = 0; i < array.length(); i++) {
+		    JSONObject personObject = array.getJSONObject(i);  
+			double price = personObject.getDouble("price");                  
+			double amt = personObject.getDouble("amount");
+			Order order = new Order(price,amt, type);
+		    retList.add(order);      
+		 }
+		return retList;
 	}
 }

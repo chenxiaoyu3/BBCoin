@@ -1,16 +1,23 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity" >
 <!--
-	<include
-	    android:id="@+id/v_main_coinStatus"
-	    layout="@layout/layout_coinstatus"/>
+
 -->
-	<com.chenxiaoyu.bbcoin.widget.CoinStatusView
-	    android:id="@+id/v_main_coinStatus"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    />
-</FrameLayout>
+	    
+	<com.viewpagerindicator.TabPageIndicator
+        android:id="@+id/indicator"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+	
+</LinearLayout>

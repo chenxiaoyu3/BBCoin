@@ -8,5 +8,16 @@ public class Order {
 	public int type;
 	public double amount, price, sum;
 	
+	
+	public Order() {
+		
+	}
+	public Order(double price, double amount, int ty) {
+		this.price = price;
+		this.amount = amount;
+		this.sum = this.price * this.amount;
+		this.type = ty;
+		
+	}
 
 }

@@ -3,20 +3,22 @@ package com.chenxiaoyu.bbcoin.widget;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.chenxiaoyu.bbcoin.CoinStatus;
 import com.chenxiaoyu.bbcoin.Order;
 import com.chenxiaoyu.bbcoin.R;
 import com.chenxiaoyu.bbcoin.http.Commu;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class CoinStatusView extends LinearLayout{
 
@@ -24,6 +26,10 @@ public class CoinStatusView extends LinearLayout{
 	ListView listViewOrdersBuy, listViewOrdersSell;
 	Context context;
 	OrdersListViewAdapter buyOrdersListViewAdapter, sellOrdersListViewAdapter;
+	FetchDataTask fetchDataTask = null;
+	CoinStatus coinStatus;
+	String coinName;
+	
 	public CoinStatusView(Context context) {
 		super(context);
 		this.context = context;
@@ -53,18 +59,32 @@ public class CoinStatusView extends LinearLayout{
 	
 	public void test()
 	{
-		Order o = new Order();
-		o.price = 1343.23423;
-		o.amount = 234;
-		o.sum = 23423.23535;
-		List<Order> orders = new ArrayList<Order>();
-		for(int i = 0; i < 10; i++)
-			orders.add(o);
-		buyOrdersListViewAdapter = new OrdersListViewAdapter(orders);
-		
+//		
+//		FetchDataTask task = new FetchDataTask();
+//		task.execute(0);
+//		
+	}
+	public String getCoinName() {
+		return coinName;
+	}
+	public void setCoinName(String coinName) {
+		this.coinName = coinName;
+	}
+	
+	void setCoinStatus(CoinStatus cs){
+		this.coinStatus = cs;
+		this.buyOrdersListViewAdapter = new OrdersListViewAdapter(cs.buyOrders);
+		this.sellOrdersListViewAdapter = new OrdersListViewAdapter(cs.sellOrders);
 		this.listViewOrdersBuy.setAdapter(buyOrdersListViewAdapter);
-		this.listViewOrdersSell.setAdapter(buyOrdersListViewAdapter);
+		this.listViewOrdersSell.setAdapter(sellOrdersListViewAdapter);
 		
+	}
+	
+	public void refreshCoinStatus(){
+		if(fetchDataTask != null) return;
+		Log.d("CoinsView", coinName + " fresh now...");
+		fetchDataTask = new FetchDataTask();
+		fetchDataTask.execute(0);
 	}
 	
 	class OrdersListViewAdapter extends BaseAdapter{
@@ -110,16 +130,22 @@ public class CoinStatusView extends LinearLayout{
 		
 	}
 	
-	class FetchDataTask extends AsyncTask<Object, Object, Object>
+	class FetchDataTask extends AsyncTask<Object, Object, CoinStatus>
 	{
 
 		@Override
-		protected Object doInBackground(Object... params) {
-			String retString = Commu.getInstance().sendHttpClientPost("http://ggcoin.sinaapp.com/fetchData/tradeList38", null, "utf-8");
-			if(retString != null){
-				
+		protected CoinStatus doInBackground(Object... params) {
+			CoinStatus cs = Commu.getInstance().fetchCoinStatus(coinName);
+			return cs;
+		}
+		@Override
+		protected void onPostExecute(CoinStatus result) {
+			if(result != null){
+				CoinStatusView.this.setCoinStatus(result);
+			}else {
+				Toast.makeText(CoinStatusView.this.context, "Error", Toast.LENGTH_SHORT).show();
 			}
-			return null;
+			super.onPostExecute(result);
 		}
 		
 	}
