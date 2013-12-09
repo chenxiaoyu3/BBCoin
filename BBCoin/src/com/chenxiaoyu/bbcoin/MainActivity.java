@@ -2,6 +2,7 @@ package com.chenxiaoyu.bbcoin;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TabHost.OnTabChangeListener;
 
@@ -38,6 +40,7 @@ public class MainActivity extends FragmentActivity {
 	List<CoinStatusFragment> coinsFragments = new ArrayList<CoinStatusFragment>();
 
 	LinearLayout menuView;
+	List<SingleCoinView> coinsViews;
 	Button refreshButton;
 	FetchPricesTask refreshPricesTask;
 	CoinsPrice coinsPrice;
@@ -87,7 +90,7 @@ public class MainActivity extends FragmentActivity {
     			switch (arg0.what) {
 				case 0:
 					if (coinsPrice != null) {
-						refreshButton.setText(String.valueOf(Utils.secPassed(coinsPrice.updateTime)));
+						refreshButton.setText(Utils.timePassed(MainActivity.this, coinsPrice.updateTime));
 					}
 					
 					break;
@@ -134,6 +137,14 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 		
+		this.coinsViews = new ArrayList<SingleCoinView>();
+		for(int i = 0; i < Coin.COINS.length; i++){
+			SingleCoinView singleCoinView = new SingleCoinView(this);
+			singleCoinView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			
+			this.menuView.addView(singleCoinView);
+			this.coinsViews.add(singleCoinView);
+		}
 		
 		
     }
@@ -145,14 +156,10 @@ public class MainActivity extends FragmentActivity {
     
     void setCoinsPrices(CoinsPrice cp)
     {
-    	this.menuView.removeAllViews();
-    	for(Coin coin : cp.prices){
-			SingleCoinView singleCoinView = new SingleCoinView(this);
-			singleCoinView.setCoin(coin);
-			singleCoinView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			this.menuView.addView(singleCoinView);
+    	for(int i = 0; i < Coin.COINS.length; i++){
+			SingleCoinView singleCoinView = this.coinsViews.get(i);
+			singleCoinView.setCoin(cp.prices.get(i));
 		}
-    	this.refreshButton.setText(Utils.time2str(cp.updateTime));
     	this.coinsPrice = cp;
     }
     

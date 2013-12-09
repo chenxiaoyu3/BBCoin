@@ -6,4 +6,9 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 	<string name="sell">卖</string>
 	<string name="buy">买</string>
+	
+	<string name="day">d</string>
+	<string name="hour"></string>
+	<string name="minite">m</string>
+	<string name="second">s</string>
 </resources>

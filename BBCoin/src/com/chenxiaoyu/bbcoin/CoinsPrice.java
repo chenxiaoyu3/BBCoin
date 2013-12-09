@@ -8,7 +8,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 public class CoinsPrice {
-	public Date updateTime;
+	public Calendar updateTime;
 	public List<Coin> prices;
 	
 	public static CoinsPrice parseJSON(String str){
@@ -27,8 +27,8 @@ public class CoinsPrice {
 				ret.prices.add(c);
 			}
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(jsonObject.getLong("updatetime"));
-			ret.updateTime = calendar.getTime();
+			calendar.setTimeInMillis(jsonObject.getLong("updatetime")*1000);
+			ret.updateTime = calendar;
 
 		} catch (Exception e) {
 			// TODO: handle exception
