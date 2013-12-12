@@ -7,6 +7,10 @@
 	<string name="sell">卖</string>
 	<string name="buy">买</string>
 	
+	<string name="buyPrice">买入价</string>
+	<string name="sellPrice">卖出价</string>
+	<string name="sumPrice">总额</string>
+	
 	<string name="day">d</string>
 	<string name="hour"></string>
 	<string name="minite">m</string>

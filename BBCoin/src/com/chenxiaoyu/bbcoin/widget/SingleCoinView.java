@@ -19,21 +19,19 @@ public class SingleCoinView extends LinearLayout{
     Context context;
     public SingleCoinView(Context context)
     {
-            super(context);
-            LayoutInflater.from(context).inflate(R.layout.layout_singlecoin, this);
-            initID();
-            init();
-            this.context = context;
-            
-            
-    }
-    public SingleCoinView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(context);
         LayoutInflater.from(context).inflate(R.layout.layout_singlecoin, this);
         initID();
         init();
         this.context = context;
     }
+//    public SingleCoinView(Context context, AttributeSet attrs) {
+//        super(context, attrs);
+//        LayoutInflater.from(context).inflate(R.layout.layout_singlecoin, this);
+//        initID();
+//        init();
+//        this.context = context;
+//    }
 
 	private void initID()
 	{

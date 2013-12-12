@@ -32,4 +32,12 @@ public class Coin {
 	public static String sGetStrName(int i){
 		return COINS[i];
 	}
+	public static int GetCoinID(String str){
+		for(int i = 0; i < Coin.COINS.length; i++){
+			if (Coin.COINS[i].equals(str.toUpperCase())) {
+				return i;
+			}
+		}
+		return 0;
+	}
 }

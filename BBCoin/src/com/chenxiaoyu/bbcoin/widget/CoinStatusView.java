@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.chenxiaoyu.bbcoin.CoinStatus;
+import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.Order;
 import com.chenxiaoyu.bbcoin.R;
 import com.chenxiaoyu.bbcoin.http.Commu;
@@ -22,13 +23,14 @@ import android.widget.Toast;
 
 public class CoinStatusView extends LinearLayout{
 
+	public final String TAG = "CoinStatusView";
 	View viewOrders;
 	ListView listViewOrdersBuy, listViewOrdersSell;
 	Context context;
 	OrdersListViewAdapter buyOrdersListViewAdapter, sellOrdersListViewAdapter;
-	FetchDataTask fetchDataTask = null;
-	CoinStatus coinStatus;
-	String coinName;
+//	FetchDataTask fetchDataTask = null;
+
+	int coinID;
 	
 	public CoinStatusView(Context context) {
 		super(context);
@@ -37,13 +39,6 @@ public class CoinStatusView extends LinearLayout{
         initID();
         init();
 	}
-	public CoinStatusView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.context = context;
-        LayoutInflater.from(context).inflate(R.layout.layout_coinstatus, this);
-        initID();
-        init();
-    }
 	
 	private void initID()
 	{
@@ -54,7 +49,11 @@ public class CoinStatusView extends LinearLayout{
 	}
 	private void init()
 	{
-		
+		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
+		this.buyOrdersListViewAdapter = new OrdersListViewAdapter(cs.buyOrders);
+		this.sellOrdersListViewAdapter = new OrdersListViewAdapter(cs.sellOrders);
+		this.listViewOrdersBuy.setAdapter(buyOrdersListViewAdapter);
+		this.listViewOrdersSell.setAdapter(sellOrdersListViewAdapter);
 	}
 	
 	public void test()
@@ -64,27 +63,26 @@ public class CoinStatusView extends LinearLayout{
 //		task.execute(0);
 //		
 	}
-	public String getCoinName() {
-		return coinName;
+
+	public int getCoinID() {
+		return coinID;
 	}
-	public void setCoinName(String coinName) {
-		this.coinName = coinName;
+	public void setCoinID(int id) {
+		this.coinID = id;
 	}
 	
-	void setCoinStatus(CoinStatus cs){
-		this.coinStatus = cs;
-		this.buyOrdersListViewAdapter = new OrdersListViewAdapter(cs.buyOrders);
-		this.sellOrdersListViewAdapter = new OrdersListViewAdapter(cs.sellOrders);
-		this.listViewOrdersBuy.setAdapter(buyOrdersListViewAdapter);
-		this.listViewOrdersSell.setAdapter(sellOrdersListViewAdapter);
-		
+	public void doRefresh(){
+		Log.d(TAG, coinID + " refresh " + DataCenter.getInstance().getAllCoinStatus().get(coinID).buyOrders.size());
+		Log.d(TAG, coinID + " refresh " + this.buyOrdersListViewAdapter.getCount());
+		this.buyOrdersListViewAdapter.notifyDataSetChanged();
+		this.sellOrdersListViewAdapter.notifyDataSetChanged();
 	}
 	
 	public void refreshCoinStatus(){
-		if(fetchDataTask != null) return;
-		Log.d("CoinsView", coinName + " fresh now...");
-		fetchDataTask = new FetchDataTask();
-		fetchDataTask.execute(0);
+//		if(fetchDataTask != null) return;
+//		Log.d("CoinsView", coinName + " fresh now...");
+//		fetchDataTask = new FetchDataTask();
+//		fetchDataTask.execute(0);
 	}
 	
 	class OrdersListViewAdapter extends BaseAdapter{
@@ -130,24 +128,24 @@ public class CoinStatusView extends LinearLayout{
 		
 	}
 	
-	class FetchDataTask extends AsyncTask<Object, Object, CoinStatus>
-	{
-
-		@Override
-		protected CoinStatus doInBackground(Object... params) {
-			CoinStatus cs = Commu.getInstance().fetchCoinStatus(coinName);
-			return cs;
-		}
-		@Override
-		protected void onPostExecute(CoinStatus result) {
-			if(result != null){
-				CoinStatusView.this.setCoinStatus(result);
-			}else {
-				Toast.makeText(CoinStatusView.this.context, "Error", Toast.LENGTH_SHORT).show();
-			}
-			super.onPostExecute(result);
-		}
-		
-	}
+//	class FetchDataTask extends AsyncTask<Object, Object, CoinStatus>
+//	{
+//
+//		@Override
+//		protected CoinStatus doInBackground(Object... params) {
+//			CoinStatus cs = Commu.getInstance().fetchCoinStatus(coinName);
+//			return cs;
+//		}
+//		@Override
+//		protected void onPostExecute(CoinStatus result) {
+//			if(result != null){
+//				CoinStatusView.this.setCoinStatus(result);
+//			}else {
+//				Toast.makeText(CoinStatusView.this.context, "Error", Toast.LENGTH_SHORT).show();
+//			}
+//			super.onPostExecute(result);
+////		}
+//		
+//	}
 
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
+import org.json.JSONObject;
 
+import com.chenxiaoyu.bbcoin.Coin;
 import com.chenxiaoyu.bbcoin.CoinStatus;
 import com.chenxiaoyu.bbcoin.CoinsPrice;
 
@@ -106,16 +109,16 @@ public class Commu  {
     	return instance;
     }
     
-    final String URL_TRAD = "http://www.btc38.com//trade/getTradeList.php?coinname=";
-    public CoinStatus fetchCoinStatus(String coin){
-    	CoinStatus ret = null;
-    	String string = sendHttpClientPost(URL_TRAD+coin, null, "utf-8");
-    	
-    	if(string != null){
-    		ret = CoinStatus.parseJSON(string);
-    	}
-    	return ret;
-    }
+//    final String URL_TRAD = "http://www.btc38.com//trade/getTradeList.php?coinname=";
+//    public CoinStatus fetchCoinStatus(String coin){
+//    	CoinStatus ret = null;
+//    	String string = sendHttpClientPost(URL_TRAD+coin, null, "utf-8");
+//    	
+//    	if(string != null){
+//    		ret = CoinStatus.parseJSON(string);
+//    	}
+//    	return ret;
+//    }
     
     final String URL_PRICE = "http://ggcoin.sinaapp.com/fetchData/allPrice";
     public CoinsPrice fetchCoinsPrices(){
@@ -124,6 +127,28 @@ public class Commu  {
     	if(str != null){
     		ret = CoinsPrice.parseJSON(str);
     	}
+    	return ret;
+    }
+    
+    final String URL_ALL_TRADE = "http://ggcoin.sinaapp.com/fetchData/tradeListAll";
+    public List<CoinStatus> fetchAllTradeList(){
+    	List<CoinStatus> ret = new ArrayList<CoinStatus>();
+    	String data = sendHttpClientPost(URL_ALL_TRADE, null, "utf-8");
+    	if (data != null) {		
+    		try {
+    			JSONObject jsonObject = new JSONObject(data); 
+    			for( int i = 0 ; i < Coin.COINS.length; i++) {
+    				JSONObject eachTradList = jsonObject.getJSONObject(Coin.COINS[i]);
+    				CoinStatus cs = CoinStatus.parseJOSN(eachTradList);
+    				cs.setCoinID(i);
+    				ret.add(cs);
+    			}
+
+    		} catch (Exception e) {
+    			ret = null;
+    			e.printStackTrace();
+    		}
+		}
     	return ret;
     }
 }

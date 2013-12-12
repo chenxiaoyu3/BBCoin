@@ -16,6 +16,22 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/buy" 
             android:textColor="@color/green"/>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/buyPrice"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sumPrice"/>
+        </LinearLayout>
 
         <ListView 
             android:id="@+id/lv_orders_buy"
@@ -33,6 +49,21 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/sell"
             android:textColor="@color/red"/>
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sellPrice"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sumPrice"/>
+        </LinearLayout>
         <ListView 
             android:id="@+id/lv_orders_sell"
             android:layout_width="match_parent"

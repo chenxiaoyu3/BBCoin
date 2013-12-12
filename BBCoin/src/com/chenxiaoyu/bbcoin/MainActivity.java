@@ -15,6 +15,9 @@ import com.viewpagerindicator.TabPageIndicator;
 
 
 
+import android.R.integer;
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,31 +40,45 @@ import android.widget.TabHost.OnTabChangeListener;
 
 public class MainActivity extends FragmentActivity {
 	
-	List<CoinStatusFragment> coinsFragments = new ArrayList<CoinStatusFragment>();
+	static MainActivity instance;
+	public static Activity getInstance(){
+		return instance;
+	}
+//	List<CoinStatusFragment> coinsFragments = new ArrayList<CoinStatusFragment>();
 
+	
+	// menu 
 	LinearLayout menuView;
 	List<SingleCoinView> coinsViews;
 	Button refreshButton;
+	
 	FetchPricesTask refreshPricesTask;
+	FetchAllTradeListTask fetchAllTradeListTask;
 	CoinsPrice coinsPrice;
 	Handler handler;
+	// menu end
+	
+	FragmentPagerAdapter fragmentPagerAdapter;
+	ViewPager pager;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	DataCenter.getInstance();
         super.onCreate(savedInstanceState);
-
+        MainActivity.instance = this;
         setContentView(R.layout.activity_main);
 
         
-        for (String co : Coin.COINS) {
-        	CoinStatusFragment c = new CoinStatusFragment(co);
-        	coinsFragments.add(c);
-		}
+//        for (int i = 0; i < Coin.COINS.length; i++) {
+//        	CoinStatusFragment c = new CoinStatusFragment(i);
+//        	coinsFragments.add(c);
+//		}
         
-        FragmentPagerAdapter adapter = new CoinsAdapter(getSupportFragmentManager());
+        fragmentPagerAdapter = new CoinsAdapter(getSupportFragmentManager());
 
-        ViewPager pager = (ViewPager)findViewById(R.id.pager);
-        pager.setAdapter(adapter);
-
+        pager = (ViewPager)findViewById(R.id.pager);
+        pager.setAdapter(fragmentPagerAdapter);
+        
         TabPageIndicator indicator = (TabPageIndicator)findViewById(R.id.indicator);
         indicator.setViewPager(pager);
         
@@ -105,9 +122,9 @@ public class MainActivity extends FragmentActivity {
 			
 			@Override
 			public void run() {
-				for(CoinStatusFragment f : coinsFragments){
-					f.refreshCoinStatus();
-				}
+//				for(CoinStatusFragment f : coinsFragments){
+//					f.refreshCoinStatus();
+//				}
 				
 			}
 		};
@@ -133,7 +150,10 @@ public class MainActivity extends FragmentActivity {
 					refreshPricesTask = new FetchPricesTask();
 					refreshPricesTask.execute(0);
 				}
-				
+				if (fetchAllTradeListTask == null){
+					fetchAllTradeListTask = new FetchAllTradeListTask();
+					fetchAllTradeListTask.execute(0);
+				}
 			}
 		});
 		
@@ -163,6 +183,10 @@ public class MainActivity extends FragmentActivity {
     	this.coinsPrice = cp;
     }
     
+    CoinStatusFragment findCoinStatusFragment(int coinID){
+    	return (CoinStatusFragment)this.fragmentPagerAdapter.getItem(coinID);
+    }
+    
     class CoinsAdapter extends FragmentPagerAdapter {
         public CoinsAdapter(FragmentManager fm) {
             super(fm);
@@ -170,7 +194,8 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return coinsFragments.get(position);
+        	CoinStatusFragment c = new CoinStatusFragment(position);
+            return c;
         }
 
         @Override
@@ -182,6 +207,7 @@ public class MainActivity extends FragmentActivity {
         public int getCount() {
             return Coin.COINS.length;
         }
+        
     }
     
     class FetchPricesTask extends AsyncTask<Object, Object, Object>{
@@ -198,6 +224,29 @@ public class MainActivity extends FragmentActivity {
 			}		
 			super.onPostExecute(arg0);
 			refreshPricesTask = null;
+		}
+    }
+    
+    
+    class FetchAllTradeListTask extends AsyncTask<Object, Object, Object>
+    {
+
+		@Override
+		protected Object doInBackground(Object... arg0) {
+			return Commu.getInstance().fetchAllTradeList();
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		protected void onPostExecute(Object result) {
+			if (result != null) {
+				DataCenter.getInstance().updateTradeList((List<CoinStatus>)result);
+				int cur = pager.getCurrentItem();
+				CoinStatusFragment csf = (CoinStatusFragment)fragmentPagerAdapter.getItem( cur );
+				csf.doRefresh();
+
+			}
+			super.onPostExecute(result);
 		}
     	
     }
