@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +13,12 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONObject;
 
@@ -26,55 +26,80 @@ import com.chenxiaoyu.bbcoin.Coin;
 import com.chenxiaoyu.bbcoin.CoinStatus;
 import com.chenxiaoyu.bbcoin.CoinsPrice;
 
-import android.net.http.AndroidHttpClient;
 
 public class Commu  {
 
-    /**
-     * 发送Http请求到Web站点
-     * @param path Web站点请求地址
-     * @param map Http请求参数
-     * @param encode 编码格式
-     * @return Web站点响应的字符串
-     */
-    public String sendHttpClientPost(String path,Map<String, String> map,String encode)
+//    /**
+//     * 发送Http请求到Web站点
+//     * @param path Web站点请求地址
+//     * @param map Http请求参数
+//     * @param encode 编码格式
+//     * @return Web站点响应的字符串
+//     */
+//    public String sendHttpClientPost(String path,Map<String, String> map,String encode)
+//    {
+//    	path = "http://baidu.com";
+//        List<NameValuePair> list=new ArrayList<NameValuePair>();
+//        if(map!=null&&!map.isEmpty())
+//        {
+//            for(Map.Entry<String, String> entry:map.entrySet())
+//            {
+//                list.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+//            }
+//        }
+//        try {
+//            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, encode);
+//            HttpPost httpPost = new HttpPost(path);
+////            httpPost.setEntity(entity);
+////            httpPost.setHeader("Accept","application/json");
+//            HttpClient client= new DefaultHttpClient();
+//            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
+//                    System.getProperty("Mozilla/5.0"));
+//            
+//            HttpResponse httpResponse= client.execute(httpPost);
+//
+//            if(httpResponse.getStatusLine().getStatusCode()==200)
+//            {
+//                InputStream inputStream=httpResponse.getEntity().getContent();
+//                return changeInputStream(inputStream,encode);
+//            }
+//            
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        } catch (ClientProtocolException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        
+//        return null;
+//    }
+    
+    public String sendHttpClientGet(String path)
     {
-        List<NameValuePair> list=new ArrayList<NameValuePair>();
-        if(map!=null&&!map.isEmpty())
-        {
-            for(Map.Entry<String, String> entry:map.entrySet())
-            {
-                list.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
-        }
         try {
-            UrlEncodedFormEntity entity=new UrlEncodedFormEntity(list, encode);
-            HttpPost httpPost=new HttpPost(path);
-            httpPost.setEntity(entity);
+            HttpGet httpGet = new HttpGet(path);
+            httpGet.setHeader("Accept","application/json");
             HttpClient client= new DefaultHttpClient();
-            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
-                    System.getProperty("Mozilla/5.0"));
+            
+            HttpResponse httpResponse= client.execute(httpGet);
 
-            HttpResponse httpResponse= client.execute(httpPost);
-
-            if(httpResponse.getStatusLine().getStatusCode()==200)
+            if(httpResponse.getStatusLine().getStatusCode() == 200)
             {
                 InputStream inputStream=httpResponse.getEntity().getContent();
-                return changeInputStream(inputStream,encode);
+                return changeInputStream(inputStream,"utf-8");
             }
             
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
         return null;
-    }                    
+    }
     /**
      * 把Web站点返回的响应流转换为字符串格式
      * @param inputStream 响应流
@@ -120,10 +145,20 @@ public class Commu  {
 //    	return ret;
 //    }
     
-    final String URL_PRICE = "http://ggcoin.sinaapp.com/fetchData/allPrice";
-    public CoinsPrice fetchCoinsPrices(){
+    final String URL_BASE = "http://ggcoin.sinaapp.com/";
+    final String URL_PRICE_BUY = URL_BASE + "API/price/buy";
+    final String URL_PRICE_SELL = URL_BASE + "API/price/sell";
+    public CoinsPrice fetchCoinsBuyPrice(){
     	CoinsPrice ret = null;
-    	String str = sendHttpClientPost(URL_PRICE, null, "utf-8");
+    	String str = sendHttpClientGet(URL_PRICE_BUY);
+    	if(str != null){
+    		ret = CoinsPrice.parseJSON(str);
+    	}
+    	return ret;
+    }
+    public CoinsPrice fetchCoinsSellPrice(){
+    	CoinsPrice ret = null;
+    	String str = sendHttpClientGet(URL_PRICE_SELL);
     	if(str != null){
     		ret = CoinsPrice.parseJSON(str);
     	}
@@ -133,7 +168,7 @@ public class Commu  {
     final String URL_ALL_TRADE = "http://ggcoin.sinaapp.com/fetchData/tradeListAll";
     public List<CoinStatus> fetchAllTradeList(){
     	List<CoinStatus> ret = new ArrayList<CoinStatus>();
-    	String data = sendHttpClientPost(URL_ALL_TRADE, null, "utf-8");
+    	String data = sendHttpClientGet(URL_ALL_TRADE);
     	if (data != null) {		
     		try {
     			JSONObject jsonObject = new JSONObject(data); 

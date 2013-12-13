@@ -150,10 +150,10 @@ public class MainActivity extends FragmentActivity {
 					refreshPricesTask = new FetchPricesTask();
 					refreshPricesTask.execute(0);
 				}
-				if (fetchAllTradeListTask == null){
-					fetchAllTradeListTask = new FetchAllTradeListTask();
-					fetchAllTradeListTask.execute(0);
-				}
+//				if (fetchAllTradeListTask == null){
+//					fetchAllTradeListTask = new FetchAllTradeListTask();
+//					fetchAllTradeListTask.execute(0);
+//				}
 			}
 		});
 		
@@ -214,7 +214,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		protected Object doInBackground(Object... arg0) {
-			return Commu.getInstance().fetchCoinsPrices();
+			return Commu.getInstance().fetchCoinsBuyPrice();
 		}
 		
 		@Override
