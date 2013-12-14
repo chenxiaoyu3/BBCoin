@@ -3,6 +3,10 @@ package com.chenxiaoyu.bbcoin;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.chenxiaoyu.bbcoin.model.Coin;
+import com.chenxiaoyu.bbcoin.model.CoinStatus;
+import com.chenxiaoyu.bbcoin.model.Order;
+
 public class DataCenter {
 
 
@@ -36,6 +40,7 @@ public class DataCenter {
 			CoinStatus cs = mAllCoinStatus.get( coinStatus.getCoinID() );
 			cs.buyOrders.clear();
 			cs.buyOrders.addAll(coinStatus.buyOrders);
+			cs.updateTime = coinStatus.updateTime;
 			cs.sellOrders.clear();
 			cs.sellOrders.addAll(coinStatus.sellOrders);
 		}

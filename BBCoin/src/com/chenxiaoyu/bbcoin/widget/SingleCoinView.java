@@ -1,8 +1,8 @@
 package com.chenxiaoyu.bbcoin.widget;
 
 
-import com.chenxiaoyu.bbcoin.Coin;
 import com.chenxiaoyu.bbcoin.R;
+import com.chenxiaoyu.bbcoin.model.Coin;
 
 import android.content.Context;
 import android.graphics.Color;

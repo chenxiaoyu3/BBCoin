@@ -1,6 +1,7 @@
-package com.chenxiaoyu.bbcoin;
+package com.chenxiaoyu.bbcoin.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -8,11 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+
 public class CoinStatus {
 
 	int coinID;
 	public List<Order> buyOrders, sellOrders;
-	
+	public Date updateTime;
 	public CoinStatus() {
 		
 	}

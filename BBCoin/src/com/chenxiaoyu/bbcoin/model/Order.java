@@ -1,4 +1,4 @@
-package com.chenxiaoyu.bbcoin;
+package com.chenxiaoyu.bbcoin.model;
 
 public class Order {
 	

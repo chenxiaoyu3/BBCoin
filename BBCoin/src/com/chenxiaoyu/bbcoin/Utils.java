@@ -1,7 +1,9 @@
 package com.chenxiaoyu.bbcoin;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import android.content.Context;
 
@@ -13,7 +15,11 @@ public class Utils {
 		
 		return calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
 	}
-	
+	public static String timeFormat(Date date, String format){
+		SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.CHINA);
+		return sdf.format(date);
+		
+	}
 	
 	public static String timePassed(Context context, Calendar calendar){
 		
@@ -45,5 +51,24 @@ public class Utils {
 		builder.append(sec);
 		builder.append(context.getString(R.string.second));
 		return builder.toString();
+	}
+	
+	public static String timePassed(Context context, Date date){
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return timePassed(context, calendar);
+	}
+	
+	public static int timeCompareTo(Date d1, Date d2){
+		if (d1 == null || d2 == null) {
+			return 0 ;
+		}
+		Calendar c1 = Calendar.getInstance();
+		c1.setTime(d1);
+		Calendar c2 = Calendar.getInstance();
+		c2.setTime(d2);
+		
+		return c1.compareTo(c2);
 	}
 }

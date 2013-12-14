@@ -8,7 +8,7 @@
 <!--
 
 -->
-		<com.viewpagerindicator.TabPageIndicator
+	<com.viewpagerindicator.TabPageIndicator
         android:id="@+id/indicator"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
@@ -20,6 +20,4 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         />    
-
-	
 </LinearLayout>

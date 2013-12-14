@@ -3,11 +3,15 @@ package com.chenxiaoyu.bbcoin;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.chenxiaoyu.bbcoin.http.Commu;
+import com.chenxiaoyu.bbcoin.model.Coin;
+import com.chenxiaoyu.bbcoin.model.CoinStatus;
+import com.chenxiaoyu.bbcoin.model.CoinsPrice;
 import com.chenxiaoyu.bbcoin.widget.CoinStatusView;
 import com.chenxiaoyu.bbcoin.widget.SingleCoinView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -26,98 +30,90 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TabHost.OnTabChangeListener;
 
 
 public class MainActivity extends FragmentActivity {
-	
-	static MainActivity instance;
-	public static Activity getInstance(){
-		return instance;
-	}
-//	List<CoinStatusFragment> coinsFragments = new ArrayList<CoinStatusFragment>();
 
-	
-	// menu 
+	public final String TAG = "MainActivity";
+	//------- menu
 	LinearLayout menuView;
 	List<SingleCoinView> coinsViews;
 	Button refreshButton;
+	SlidingMenu slidingMenu;
+	TextView timestampTextView;
+	//------end menu
+	FragmentPagerAdapter fragmentPagerAdapter;
+	ViewPager pager;
 	
+	TabPageIndicator indicator;
+	Timer timer;
 	FetchPricesTask refreshPricesTask;
 	FetchAllTradeListTask fetchAllTradeListTask;
 	CoinsPrice coinsPrice;
-	Handler handler;
-	// menu end
+	Date lastUpdate = new Date();
+	Handler handler = new Handler(){
+		@Override
+		public void handleMessage(Message arg0) {
+			switch (arg0.what) {
+			case 0:
+				if (coinsPrice != null) {
+					refreshButton.setText(Utils.timePassed(MainActivity.this, lastUpdate) + getString(R.string.passed));
+				}
+				
+				break;
+
+			default:
+				break;
+			}
+			super.handleMessage(arg0);
+		}
+	};;
 	
-	FragmentPagerAdapter fragmentPagerAdapter;
-	ViewPager pager;
+	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	DataCenter.getInstance();
         super.onCreate(savedInstanceState);
-        MainActivity.instance = this;
         setContentView(R.layout.activity_main);
 
-        
-//        for (int i = 0; i < Coin.COINS.length; i++) {
-//        	CoinStatusFragment c = new CoinStatusFragment(i);
-//        	coinsFragments.add(c);
-//		}
+        initSlidingMenu();
+        initIDs();
         
         fragmentPagerAdapter = new CoinsAdapter(getSupportFragmentManager());
-
-        pager = (ViewPager)findViewById(R.id.pager);
+        
         pager.setAdapter(fragmentPagerAdapter);
+        pager.setOffscreenPageLimit(13);
         
-        TabPageIndicator indicator = (TabPageIndicator)findViewById(R.id.indicator);
+        indicator = (TabPageIndicator)findViewById(R.id.indicator);
         indicator.setViewPager(pager);
-        
-        
-        
-        SlidingMenu slidingMenu = new SlidingMenu(this);
-        
-        slidingMenu.setMode(SlidingMenu.LEFT);
-        slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
-        slidingMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-        slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
-        slidingMenu.setShadowDrawable(R.drawable.shadow);
-        slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        slidingMenu.setMenu(R.layout.layout_slidingmenu);
-        
-        
-        initIDs();
+       
         init();
         
     }
     
+    @Override
+	protected void onDestroy() {
+		timer.cancel();
+		super.onDestroy();
+	}
+    
     void init(){
-    	handler = new Handler(){
-    		@Override
-    		public void handleMessage(Message arg0) {
-    			switch (arg0.what) {
-				case 0:
-					if (coinsPrice != null) {
-						refreshButton.setText(Utils.timePassed(MainActivity.this, coinsPrice.updateTime));
-					}
-					
-					break;
-
-				default:
-					break;
-				}
-    			super.handleMessage(arg0);
-    		}
-    	};
+    	
     	TimerTask task = new TimerTask() {
 			
 			@Override
@@ -128,7 +124,7 @@ public class MainActivity extends FragmentActivity {
 				
 			}
 		};
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.schedule(task, 1000, 5000);
 		
 		// all coin
@@ -150,10 +146,10 @@ public class MainActivity extends FragmentActivity {
 					refreshPricesTask = new FetchPricesTask();
 					refreshPricesTask.execute(0);
 				}
-//				if (fetchAllTradeListTask == null){
-//					fetchAllTradeListTask = new FetchAllTradeListTask();
-//					fetchAllTradeListTask.execute(0);
-//				}
+				if (fetchAllTradeListTask == null){
+					fetchAllTradeListTask = new FetchAllTradeListTask();
+					fetchAllTradeListTask.execute(0);
+				}
 			}
 		});
 		
@@ -166,14 +162,66 @@ public class MainActivity extends FragmentActivity {
 			this.coinsViews.add(singleCoinView);
 		}
 		
+		this.indicator.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(int arg0) {
+				int cur = pager.getCurrentItem();
+				CoinStatusFragment csf = (CoinStatusFragment)fragmentPagerAdapter.getItem( cur );
+				csf.doRefresh();
+				if (arg0 == 0) {
+					slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+				}else {
+					slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+				}
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {}
+		});
+		
+		slidingMenu.setOnOpenedListener(new SlidingMenu.OnOpenedListener() {
+				
+				@Override
+				public void onOpened() {
+					if (refreshPricesTask == null) {
+						refreshPricesTask = new FetchPricesTask();
+						refreshPricesTask.execute(0);
+					}
+					if (fetchAllTradeListTask == null){
+						fetchAllTradeListTask = new FetchAllTradeListTask();
+						fetchAllTradeListTask.execute(0);
+					}
+				
+			}
+		});
 		
     }
     
     void initIDs(){
-    	this.menuView = (LinearLayout)findViewById(R.id.v_slideMenu_coins);
+    	
+        
+    	
     	this.refreshButton = (Button)findViewById(R.id.bt_slideMenu_refresh);
+    	this.pager = (ViewPager)findViewById(R.id.pager);
     }
     
+    void initSlidingMenu(){
+    	slidingMenu = new SlidingMenu(this);
+        slidingMenu.setMode(SlidingMenu.LEFT);
+        slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
+        slidingMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        slidingMenu.setShadowDrawable(R.drawable.shadow);
+        slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        slidingMenu.setMenu(R.layout.layout_slidingmenu);
+        
+        this.menuView = (LinearLayout)findViewById(R.id.v_slideMenu_coins);
+        this.timestampTextView = (TextView)findViewById(R.id.tv_slideMenu_timestamp);
+    }
     void setCoinsPrices(CoinsPrice cp)
     {
     	for(int i = 0; i < Coin.COINS.length; i++){
@@ -188,14 +236,21 @@ public class MainActivity extends FragmentActivity {
     }
     
     class CoinsAdapter extends FragmentPagerAdapter {
+    	CoinStatusFragment[] fragments  = new CoinStatusFragment[Coin.COINS.length];
         public CoinsAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-        	CoinStatusFragment c = new CoinStatusFragment(position);
-            return c;
+        	position = position % Coin.COINS.length;
+        	if (fragments[position] == null) {
+        		CoinStatusFragment c = new CoinStatusFragment();
+        		c.setCoinID(position);
+        		fragments[position] = c;
+        		Log.v(TAG, "New fragment " + position);
+			}
+            return fragments[position];
         }
 
         @Override
@@ -208,8 +263,15 @@ public class MainActivity extends FragmentActivity {
             return Coin.COINS.length;
         }
         
+        public void refreshAll(){
+        	for (CoinStatusFragment fragment : fragments) {
+				fragment.doRefresh();
+			}
+        }
+        
+        
     }
-    
+   
     class FetchPricesTask extends AsyncTask<Object, Object, Object>{
 
 		@Override
@@ -221,6 +283,8 @@ public class MainActivity extends FragmentActivity {
 		protected void onPostExecute(Object arg0) {
 			if(arg0 != null){
 				setCoinsPrices((CoinsPrice)arg0);
+				timestampTextView.setText( Utils.timeFormat( ((CoinsPrice)arg0).updateTime.getTime(), "hh:mm:ss")  );
+				lastUpdate = new Date();
 			}		
 			super.onPostExecute(arg0);
 			refreshPricesTask = null;
@@ -244,9 +308,10 @@ public class MainActivity extends FragmentActivity {
 				int cur = pager.getCurrentItem();
 				CoinStatusFragment csf = (CoinStatusFragment)fragmentPagerAdapter.getItem( cur );
 				csf.doRefresh();
-
+				
 			}
 			super.onPostExecute(result);
+			fetchAllTradeListTask = null;
 		}
     	
     }

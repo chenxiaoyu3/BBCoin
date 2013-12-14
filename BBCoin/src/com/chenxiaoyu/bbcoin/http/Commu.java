@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +23,9 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONObject;
 
-import com.chenxiaoyu.bbcoin.Coin;
-import com.chenxiaoyu.bbcoin.CoinStatus;
-import com.chenxiaoyu.bbcoin.CoinsPrice;
+import com.chenxiaoyu.bbcoin.model.Coin;
+import com.chenxiaoyu.bbcoin.model.CoinStatus;
+import com.chenxiaoyu.bbcoin.model.CoinsPrice;
 
 
 public class Commu  {
@@ -165,17 +166,21 @@ public class Commu  {
     	return ret;
     }
     
-    final String URL_ALL_TRADE = "http://ggcoin.sinaapp.com/fetchData/tradeListAll";
+    final String URL_ALL_TRADE = URL_BASE + "API/trade_list";
     public List<CoinStatus> fetchAllTradeList(){
     	List<CoinStatus> ret = new ArrayList<CoinStatus>();
     	String data = sendHttpClientGet(URL_ALL_TRADE);
     	if (data != null) {		
     		try {
-    			JSONObject jsonObject = new JSONObject(data); 
+    			
+    			
+    			JSONObject jsonObject = new JSONObject(data);
+    			Date t = new Date(jsonObject.getLong("updatetime")*1000);
     			for( int i = 0 ; i < Coin.COINS.length; i++) {
     				JSONObject eachTradList = jsonObject.getJSONObject(Coin.COINS[i]);
     				CoinStatus cs = CoinStatus.parseJOSN(eachTradList);
     				cs.setCoinID(i);
+    				cs.updateTime = t;
     				ret.add(cs);
     			}
 

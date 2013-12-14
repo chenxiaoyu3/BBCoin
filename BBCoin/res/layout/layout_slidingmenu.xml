@@ -4,14 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
     android:orientation="vertical"
-    android:background="@color/black">
+    android:background="@drawable/bg_main">
 
     <Button 
         android:id="@+id/bt_slideMenu_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:textSize="13sp"
+        android:textColor="@color/white"
         />
-
+	<TextView 
+	    android:id="@+id/tv_slideMenu_timestamp"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="right"
+	    android:textSize="12sp"
+	    android:textColor="@color/white"/>
     <LinearLayout 
         android:id="@+id/v_slideMenu_coins"
         android:layout_width="match_parent"

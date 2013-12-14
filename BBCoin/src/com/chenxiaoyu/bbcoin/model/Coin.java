@@ -1,8 +1,8 @@
-package com.chenxiaoyu.bbcoin;
+package com.chenxiaoyu.bbcoin.model;
 
 public class Coin {
 
-	public static final String [] COINS = {"BTC", "LTC", "XPM", "BEC", "XRP", "ZCC", "MEC", "ANC", "PPC", "SRC", "TAG", "PTS", "TMC"};
+	public static final String [] COINS = {"BTC", "LTC", "XPM", "BEC", "XRP", "ZCC", "MEC", "ANC", "PPC", "SRC", "TAG", "PTS", "WDC","APC","DGC", "TMC"};
 	
 	int coin = 0;
 	double price;

@@ -1,10 +1,11 @@
-package com.chenxiaoyu.bbcoin;
+package com.chenxiaoyu.bbcoin.model;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.json.JSONObject;
+
 
 public class CoinsPrice {
 	public Calendar updateTime;

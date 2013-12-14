@@ -1,16 +1,21 @@
 package com.chenxiaoyu.bbcoin.widget;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import com.chenxiaoyu.bbcoin.CoinStatus;
 import com.chenxiaoyu.bbcoin.DataCenter;
-import com.chenxiaoyu.bbcoin.Order;
+import com.chenxiaoyu.bbcoin.MainActivity;
 import com.chenxiaoyu.bbcoin.R;
+import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
+import com.chenxiaoyu.bbcoin.model.CoinStatus;
+import com.chenxiaoyu.bbcoin.model.Order;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,12 +31,39 @@ public class CoinStatusView extends LinearLayout{
 	public final String TAG = "CoinStatusView";
 	View viewOrders;
 	ListView listViewOrdersBuy, listViewOrdersSell;
+	LinearLayout buyOrdersView, sellOrdersView;
 	Context context;
-	OrdersListViewAdapter buyOrdersListViewAdapter, sellOrdersListViewAdapter;
-//	FetchDataTask fetchDataTask = null;
 
+	Date lastRefreshUITime;
 	int coinID;
-	
+	Handler handler = new Handler(){
+		@Override
+		public void handleMessage(Message arg0) {
+			switch (arg0.what) {
+			case 0:
+				buyOrdersView.removeAllViews();
+				sellOrdersView.removeAllViews();
+				CoinStatus cs = (CoinStatus)arg0.obj;
+				for (Order order : cs.buyOrders) {
+					SingleOrderView view = new SingleOrderView(context);
+					view.setOrder(order);
+					buyOrdersView.addView(view);
+				}
+				for (Order order : cs.sellOrders) {
+					SingleOrderView view = new SingleOrderView(context);
+					view.setOrder(order);
+					sellOrdersView.addView(view);
+				}
+				
+				lastRefreshUITime = cs.updateTime;
+				break;
+
+			default:
+				break;
+			}
+			super.handleMessage(arg0);
+		}
+	};
 	public CoinStatusView(Context context) {
 		super(context);
 		this.context = context;
@@ -43,25 +75,17 @@ public class CoinStatusView extends LinearLayout{
 	private void initID()
 	{
 		this.viewOrders = findViewById(R.id.v_coinstatus_orders);
-		this.listViewOrdersBuy = (ListView)findViewById(R.id.lv_orders_buy);
-		this.listViewOrdersSell = (ListView)findViewById(R.id.lv_orders_sell);
+
+		this.buyOrdersView = (LinearLayout)findViewById(R.id.v_orders_buy);
+		this.sellOrdersView = (LinearLayout)findViewById(R.id.v_orders_sell);
 	
 	}
 	private void init()
 	{
-		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
-		this.buyOrdersListViewAdapter = new OrdersListViewAdapter(cs.buyOrders);
-		this.sellOrdersListViewAdapter = new OrdersListViewAdapter(cs.sellOrders);
-		this.listViewOrdersBuy.setAdapter(buyOrdersListViewAdapter);
-		this.listViewOrdersSell.setAdapter(sellOrdersListViewAdapter);
-	}
-	
-	public void test()
-	{
-//		
-//		FetchDataTask task = new FetchDataTask();
-//		task.execute(0);
-//		
+//		this.buyOrdersListViewAdapter = new OrdersListViewAdapter(cs.buyOrders);
+//		this.sellOrdersListViewAdapter = new OrdersListViewAdapter(cs.sellOrders);
+//		this.listViewOrdersBuy.setAdapter(buyOrdersListViewAdapter);
+//		this.listViewOrdersSell.setAdapter(sellOrdersListViewAdapter);
 	}
 
 	public int getCoinID() {
@@ -72,61 +96,60 @@ public class CoinStatusView extends LinearLayout{
 	}
 	
 	public void doRefresh(){
-		Log.d(TAG, coinID + " refresh " + DataCenter.getInstance().getAllCoinStatus().get(coinID).buyOrders.size());
-		Log.d(TAG, coinID + " refresh " + this.buyOrdersListViewAdapter.getCount());
-		this.buyOrdersListViewAdapter.notifyDataSetChanged();
-		this.sellOrdersListViewAdapter.notifyDataSetChanged();
+		Log.d(TAG, coinID + " refresh");
+		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
+		if (this.lastRefreshUITime  != null && Utils.timeCompareTo(cs.updateTime, this.lastRefreshUITime) <= 0) {
+			Log.d(TAG,"No need");
+			return;
+		}
+		Message msg = new Message();
+		msg.what = 0;
+		msg.obj = cs;
+		handler.sendMessageDelayed(msg, 200);
+		
 	}
 	
-	public void refreshCoinStatus(){
-//		if(fetchDataTask != null) return;
-//		Log.d("CoinsView", coinName + " fresh now...");
-//		fetchDataTask = new FetchDataTask();
-//		fetchDataTask.execute(0);
-	}
-	
-	class OrdersListViewAdapter extends BaseAdapter{
-		
-		List<Order> orders;
-		int type;
-		@Override
-		public int getCount() {
-			return orders.size();
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return orders.get(arg0);
-		}
-
-		@Override
-		public long getItemId(int arg0) {
-			return 0;
-		}
-
-		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
-			View retView = null;
-			if (arg1 == null) {
-				retView = new SingleOrderView(context);
-				((SingleOrderView)retView).setOrder(orders.get(arg0));
-			}else{
-				retView = arg1;
-				((SingleOrderView)retView).setOrder(orders.get(arg0));
-			}
-			return retView;
-		}
-		
-		
-		public OrdersListViewAdapter(List<Order> orders) {
-			this.orders = orders;
-			
-		}
-		public void setOrders(List<Order> orders){
-			this.orders = orders;
-		}
-		
-	}
+//	class OrdersListViewAdapter extends BaseAdapter{
+//		
+//		List<Order> orders;
+//		@Override
+//		public int getCount() {
+//			return orders.size();
+//		}
+//
+//		@Override
+//		public Object getItem(int arg0) {
+//			return orders.get(arg0);
+//		}
+//
+//		@Override
+//		public long getItemId(int arg0) {
+//			return arg0;
+//		}
+//
+//		@Override
+//		public View getView(int arg0, View arg1, ViewGroup arg2) {
+//			View retView = null;
+//			if (arg1 == null) {
+//				retView = new SingleOrderView(context);
+//				((SingleOrderView)retView).setOrder(orders.get(arg0));
+//			}else{
+//				retView = arg1;
+//				((SingleOrderView)retView).setOrder(orders.get(arg0));
+//			}
+//			return retView;
+//		}
+//		
+//		
+//		public OrdersListViewAdapter(List<Order> orders) {
+//			this.orders = orders;
+//			
+//		}
+//		public void setOrders(List<Order> orders){
+//			this.orders = orders;
+//		}
+//		
+//	}
 	
 //	class FetchDataTask extends AsyncTask<Object, Object, CoinStatus>
 //	{
