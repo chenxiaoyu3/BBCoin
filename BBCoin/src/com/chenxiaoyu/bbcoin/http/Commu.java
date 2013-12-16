@@ -21,8 +21,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.chenxiaoyu.bbcoin.model.ChartPoint;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
 import com.chenxiaoyu.bbcoin.model.CoinsPrice;
@@ -85,6 +87,31 @@ public class Commu  {
             
             HttpResponse httpResponse= client.execute(httpGet);
 
+            if(httpResponse.getStatusLine().getStatusCode() == 200)
+            {
+                InputStream inputStream=httpResponse.getEntity().getContent();
+                return changeInputStream(inputStream,"utf-8");
+            }
+            
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    public String sendHttpClientGet2(String path)
+    {
+        try {
+            HttpGet httpGet = new HttpGet(path);
+            
+            HttpClient client= new DefaultHttpClient();
+            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (Windows NT 6.1; Intel Mac OS X 10.6; rv:7.0.1) Gecko/20100101 Firefox/7.0.1");
+            HttpResponse httpResponse= client.execute(httpGet);
+            
             if(httpResponse.getStatusLine().getStatusCode() == 200)
             {
                 InputStream inputStream=httpResponse.getEntity().getContent();
@@ -189,6 +216,26 @@ public class Commu  {
     			e.printStackTrace();
     		}
 		}
+    	return ret;
+    }
+    
+    final String URL_K_CHART = "http://www.btc38.com/trade/getTradeTimeLine.php?coinname=";
+    public List<ChartPoint> fetchTimeLine(int coinID){
+    	List<ChartPoint> ret = new ArrayList<ChartPoint>();
+    	String data = sendHttpClientGet2(URL_K_CHART+Coin.sGetStrName(coinID));
+    	if(data != null){
+    		try {
+				JSONArray array = new JSONArray(data);
+				for (int i = 0; i < array.length(); i++) {
+					JSONArray a = array.getJSONArray(i);
+					ChartPoint p = ChartPoint.parse(a);
+					ret.add(p);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				ret = null;
+			}
+    	}
     	return ret;
     }
 }

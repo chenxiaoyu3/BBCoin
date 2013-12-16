@@ -1,6 +1,7 @@
 package com.chenxiaoyu.bbcoin.model;
 
-public class Order {
+
+public class Order{
 	
 	public static final int BUY = 0;
 	public static final int SELL = 1;

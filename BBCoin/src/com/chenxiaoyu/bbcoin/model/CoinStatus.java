@@ -8,9 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 
 
-public class CoinStatus {
+
+public class CoinStatus{
 
 	int coinID;
 	public List<Order> buyOrders, sellOrders;

@@ -1,5 +1,6 @@
 package com.chenxiaoyu.bbcoin;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -70,5 +71,9 @@ public class Utils {
 		c2.setTime(d2);
 		
 		return c1.compareTo(c2);
+	}
+	
+	public static int numberRound(double d){
+		return new BigDecimal(d).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 	}
 }
