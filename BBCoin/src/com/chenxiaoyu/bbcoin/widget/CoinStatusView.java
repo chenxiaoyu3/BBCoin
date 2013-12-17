@@ -96,7 +96,7 @@ public class CoinStatusView extends LinearLayout{
 	}
 	
 	public void doRefresh(){
-		Log.d(TAG, coinID + " refresh");
+//		Log.d(TAG, coinID + " refresh");
 		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
 		if (this.lastRefreshUITime  != null && Utils.timeCompareTo(cs.updateTime, this.lastRefreshUITime) <= 0) {
 			Log.d(TAG,"No need");

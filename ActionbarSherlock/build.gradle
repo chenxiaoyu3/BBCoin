@@ -1,18 +1,22 @@
-apply plugin: 'android-library'
+buildscript {
+  repositories {
+    mavenCentral()
+  }
 
-dependencies {
-  compile 'com.android.support:support-v4:18.0.+'
+  dependencies {
+    classpath 'com.android.tools.build:gradle:0.5.+'
+  }
 }
 
-android {
-  compileSdkVersion 14
-  buildToolsVersion '17.0.0'
+allprojects {
+  group = 'com.actionbarsherlock'
+  version = '4.4.0'
 
-  sourceSets {
-    main {
-      manifest.srcFile 'AndroidManifest.xml'
-      java.srcDirs = ['src']
-      res.srcDirs = ['res']
-    }
+  repositories {
+    mavenCentral()
+  }
+
+  tasks.withType(Compile) {
+    options.encoding = "UTF-8"
   }
 }

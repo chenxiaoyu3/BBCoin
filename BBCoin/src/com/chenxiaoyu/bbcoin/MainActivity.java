@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import org.stockchart.core.Theme;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
@@ -29,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -41,6 +43,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -51,7 +54,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TabHost.OnTabChangeListener;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends SherlockFragmentActivity {
 
 	public final String TAG = "MainActivity";
 	//------- menu
@@ -72,6 +75,7 @@ public class MainActivity extends FragmentActivity {
 	FetchAllTradeListTask fetchAllTradeListTask;
 	CoinsPrice coinsPrice;
 	Date lastUpdate = null;
+
 	Handler handler = new Handler(){
 		@Override
 		public void handleMessage(Message arg0) {
@@ -116,6 +120,7 @@ public class MainActivity extends FragmentActivity {
     @Override
 	protected void onDestroy() {
 		timer.cancel();
+		
 		super.onDestroy();
 	}
     void initIDs(){
@@ -127,7 +132,8 @@ public class MainActivity extends FragmentActivity {
     	this.mLoadingStatusBar = (ProgressBar)findViewById(R.id.pb_main_loading);
     }
     void init(){
-    	
+    	getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    
     	TimerTask task = new TimerTask() {
 			
 			@Override
@@ -226,6 +232,9 @@ public class MainActivity extends FragmentActivity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		PreferenceManager.Instance.set(this, "a", 1);
+		int s = (Integer)PreferenceManager.Instance.get(this, "a");
+		Toast.makeText(this, String.valueOf(s), Toast.LENGTH_SHORT).show();
     }
     
     
@@ -259,7 +268,7 @@ public class MainActivity extends FragmentActivity {
         		CoinStatusFragment c = new CoinStatusFragment();
         		c.setCoinID(position);
         		fragments[position] = c;
-        		Log.v(TAG, "New fragment " + position);
+//        		Log.v(TAG, "New fragment " + position);
 			}
             return fragments[position];
         }

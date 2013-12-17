@@ -16,4 +16,12 @@
 	<string name="minite">分</string>
 	<string name="second">秒</string>
 	<string name="passed">前刷新</string>
+	
+	<string name="lessThan">小于</string>
+	<string name="largerThan">大于</string>
+	
+	<string name="confirm">确认</string>
+	<string name="cancel">取消</string>
+	
+	<string name="alarm_succ">设置成功</string>
 </resources>

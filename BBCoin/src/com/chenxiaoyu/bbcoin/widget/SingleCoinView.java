@@ -1,11 +1,13 @@
 package com.chenxiaoyu.bbcoin.widget;
 
 
+import com.chenxiaoyu.bbcoin.AlarmSetActivity;
 import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.R;
 import com.chenxiaoyu.bbcoin.model.Coin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -46,6 +48,9 @@ public class SingleCoinView extends RelativeLayout{
 			@Override
 			public boolean onLongClick(View arg0) {
 				Toast.makeText(context, "click", Toast.LENGTH_SHORT).show();
+				Intent i = new Intent(context, AlarmSetActivity.class);
+				i.putExtra("COIN_ID", coinID);
+				context.startActivity(i);
 				return false;
 			}
 		});

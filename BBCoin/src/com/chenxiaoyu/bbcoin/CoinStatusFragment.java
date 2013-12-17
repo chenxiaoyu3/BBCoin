@@ -33,7 +33,7 @@ public final class CoinStatusFragment extends Fragment {
 	
 	@Override
 	public void onAttach(Activity activity) {
-		Log.v(TAG, "fragment attach  " + coinID);
+//		Log.v(TAG, "fragment attach  " + coinID);
 		this.context = activity;
 		coinStatusView = new CoinStatusView(this.context);
 		coinStatusView.setCoinID(this.coinID);
@@ -41,13 +41,13 @@ public final class CoinStatusFragment extends Fragment {
 	}
 	@Override
 	public void onStart() {
-		Log.v(TAG, "fragment start  " + coinID);
+//		Log.v(TAG, "fragment start  " + coinID);
 		
 		super.onStart();
 	}
 	@Override
 	public void onResume() {
-		Log.v(TAG, "fragment resume  " + coinID);
+//		Log.v(TAG, "fragment resume  " + coinID);
 		super.onResume();
 		if(coinStatusView != null){
 			coinStatusView.doRefresh();
@@ -77,7 +77,7 @@ public final class CoinStatusFragment extends Fragment {
 
 //    	coinStatusView = new CoinStatusView(this.context);
 //    	coinStatusView.setCoinID(this.coinID);
-    	Log.d(TAG, "View create  " + coinID);
+//    	Log.d(TAG, "View create  " + coinID);
         return coinStatusView;
     }
     

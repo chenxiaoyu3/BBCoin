@@ -8,7 +8,7 @@ package org.stockchart;
 
 public final class R {
 	public static final class raw {
-		public static final int dark = 0x7f040000;
-		public static final int gray = 0x7f040001;
+		public static final int dark = 0x7f050000;
+		public static final int gray = 0x7f050001;
 	}
 }
