@@ -21,13 +21,16 @@
             android:label="@string/app_name"
             
             >
-            <intent-filter>
+           
+        </activity>
+        <activity 
+            android:name="com.chenxiaoyu.bbcoin.CoinListDetailActivity"
+            android:theme="@style/Theme.Sherlock.Light">
+             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity 
             android:name="com.chenxiaoyu.bbcoin.KChartActivity"
             android:screenOrientation="landscape"
@@ -35,6 +38,7 @@
         <activity 
             android:name="com.chenxiaoyu.bbcoin.AlarmSetActivity"
             android:theme="@style/Theme.Sherlock.Light"></activity>
+
         <service android:name="com.chenxiaoyu.bbcoin.service.BBCoinService" android:process=":remote"/> 
         <receiver 
             android:name="com.chenxiaoyu.bbcoin.service.AlarmReceiver"

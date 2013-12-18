@@ -2,6 +2,7 @@ package com.chenxiaoyu.bbcoin;
 
 import java.util.Calendar;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.chenxiaoyu.bbcoin.widget.CoinStatusView;
 
 import android.app.Activity;
@@ -12,11 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-public final class CoinStatusFragment extends Fragment {
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
+public final class CoinStatusFragment extends SherlockFragment {
 	
 	public final String TAG = "CoinStatusFragment";
 	
 	int coinID;
+	float mWeight;
 	public int getCoinID() {
 		return coinID;
 	}
@@ -26,17 +30,22 @@ public final class CoinStatusFragment extends Fragment {
 
 	CoinStatusView coinStatusView;
 	Context context;
-	public CoinStatusFragment()
-	{
-		super();
+	public CoinStatusFragment(){super();}
+	public void setViewWeight(float weight){
+		mWeight = weight;
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		Log.v(TAG, "onCreate");
+		super.onCreate(savedInstanceState);
 	}
 	
 	@Override
 	public void onAttach(Activity activity) {
-//		Log.v(TAG, "fragment attach  " + coinID);
+		Log.v(TAG, "fragment attach  " + coinID);
 		this.context = activity;
-		coinStatusView = new CoinStatusView(this.context);
-		coinStatusView.setCoinID(this.coinID);
+		
 		super.onAttach(activity);
 	}
 	@Override
@@ -75,9 +84,15 @@ public final class CoinStatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-//    	coinStatusView = new CoinStatusView(this.context);
-//    	coinStatusView.setCoinID(this.coinID);
-//    	Log.d(TAG, "View create  " + coinID);
+    	Log.d(TAG, "View create  " + coinID);
+    	coinStatusView = new CoinStatusView(this.context);
+		if(mWeight != 0){
+			LayoutParams lp = new LinearLayout.LayoutParams(0,
+	                LayoutParams.MATCH_PARENT, mWeight);
+			coinStatusView.setLayoutParams(lp);
+		}
+		
+		coinStatusView.setCoinID(this.coinID);
         return coinStatusView;
     }
     

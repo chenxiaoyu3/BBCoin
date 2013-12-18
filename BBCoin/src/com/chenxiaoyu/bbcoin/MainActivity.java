@@ -86,7 +86,12 @@ public class MainActivity extends SherlockFragmentActivity {
 				}
 				
 				break;
-
+			case 1:
+				if (refreshPricesTask == null) {
+					refreshPricesTask = new FetchPricesTask();
+					refreshPricesTask.execute(0);
+				}
+				break;
 			default:
 				break;
 			}
@@ -133,19 +138,15 @@ public class MainActivity extends SherlockFragmentActivity {
     }
     void init(){
     	getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    
-    	TimerTask task = new TimerTask() {
+
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
 			
 			@Override
 			public void run() {
-//				for(CoinStatusFragment f : coinsFragments){
-//					f.refreshCoinStatus();
-//				}
-				
+				handler.sendEmptyMessage(1);
 			}
-		};
-		timer = new Timer();
-		timer.schedule(task, 1000, 5000);
+		}, 5000, 5000);
 		TimerTask updateTime = new TimerTask() {
 			
 			@Override
@@ -232,9 +233,9 @@ public class MainActivity extends SherlockFragmentActivity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		PreferenceManager.Instance.set(this, "a", 1);
-		int s = (Integer)PreferenceManager.Instance.get(this, "a");
-		Toast.makeText(this, String.valueOf(s), Toast.LENGTH_SHORT).show();
+		
+		fetchAllTradeListTask = new FetchAllTradeListTask();
+		fetchAllTradeListTask.execute(0);
     }
     
     

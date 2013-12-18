@@ -13,8 +13,8 @@ public class BBCoinApp extends Application{
 	public void onCreate() {
 		AppContext = this;
 		super.onCreate();
-		Intent i = new Intent(this, BBCoinService.class);
-		startService(i);
+//		Intent i = new Intent(this, BBCoinService.class);
+//		startService(i);
 	}
 	
 }

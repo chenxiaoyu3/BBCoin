@@ -20,6 +20,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -33,6 +34,22 @@ public class BBCoinService extends Service {
 	FetchPricesTask mFetchPricesTask;
 	Timer mTimer;
 	boolean[] mNotificationsFlag;
+	Handler mHandler = new Handler(){
+		public void handleMessage(android.os.Message msg) 
+		{
+			switch (msg.what) {
+			case 0:
+				if (mFetchPricesTask == null) {
+					mFetchPricesTask = new FetchPricesTask();
+					mFetchPricesTask.execute(0);
+				}
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
 	public IBinder onBind(Intent intent) { 
 		return null; 
 	} 
@@ -64,13 +81,10 @@ public class BBCoinService extends Service {
 			@Override
 			public void run() {
 				Log.v(TAG, "task run!");
-				if (mFetchPricesTask == null) {
-					mFetchPricesTask = new FetchPricesTask();
-					mFetchPricesTask.execute(0);
-				}
+				mHandler.sendEmptyMessage(0);
 				
 			}
-		}, 1000, 10*1000);
+		}, 10000, 1*60*1000);
 		return super.onStartCommand(intent, flags, startId);
 	}
 
