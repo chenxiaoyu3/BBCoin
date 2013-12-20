@@ -9,10 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.chenxiaoyu.bbcoin.R;
@@ -39,18 +40,18 @@ public class PriceListFragment extends SherlockFragment{
 	public void onAttach(Activity activity) {
 		Log.v(TAG, "onAttach");
 		mContext = activity;
-		mListView.setOnItemClickListener((OnItemClickListener)activity );
+		
 		super.onAttach(activity);
 	}
 	public void setFragmentViewWeight(float weight){
 		this.mWeight = weight;
 	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Log.v(TAG, "onCreateView");
 		View view = inflater.inflate(R.layout.layout_pricelist, container, false);
-		view.setBackgroundColor(Color.RED);
 		if (mWeight != 0) {
 			LayoutParams lp = new LinearLayout.LayoutParams(0,
 	                LayoutParams.MATCH_PARENT, mWeight);
@@ -59,6 +60,7 @@ public class PriceListFragment extends SherlockFragment{
 		
 		
 		mListView = (ListView)view.findViewById(R.id.lv_pricelist);
+		mListView.setOnItemClickListener((OnItemClickListener)mContext);
 		mPriceListViewAdatper = new PriceListViewAdatper();
 		mListView.setAdapter(mPriceListViewAdatper);
 		

@@ -38,7 +38,7 @@ public class SingleOrderView extends LinearLayout{
     	
     	this.tvPrice.setText(String.format("%.3f", order.price));
 //    	this.tvAmount.setText(String.format("%.4f", order.amount));
-    	this.tvSum.setText(String.format("%.3f", order.sum));
+    	this.tvSum.setText(String.format("%.1f", order.sum));
  
     	if(this.order == null || this.order.type != order.type){
     		this.setColor(order.type);

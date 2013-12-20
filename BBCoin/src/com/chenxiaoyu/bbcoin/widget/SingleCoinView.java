@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SingleCoinView extends RelativeLayout{
+public class SingleCoinView extends LinearLayout{
 
 	TextView nameTextView, priceTextView;
 	Button mButton;
@@ -39,21 +39,21 @@ public class SingleCoinView extends RelativeLayout{
 	{
 		this.priceTextView = (TextView)findViewById(R.id.tv_singlecoin_price);
 		this.nameTextView = (TextView)findViewById(R.id.tv_singlecoin_name);
-		this.mButton = (Button)findViewById(R.id.bt_singlecoin);
+//		this.mButton = (Button)findViewById(R.id.bt_singlecoin);
 	}
 	private void init()
 	{
-		this.mButton.setOnLongClickListener(new View.OnLongClickListener() {
-			
-			@Override
-			public boolean onLongClick(View arg0) {
-				Toast.makeText(context, "click", Toast.LENGTH_SHORT).show();
-				Intent i = new Intent(context, AlarmSetActivity.class);
-				i.putExtra("COIN_ID", coinID);
-				context.startActivity(i);
-				return false;
-			}
-		});
+//		this.mButton.setOnLongClickListener(new View.OnLongClickListener() {
+//			
+//			@Override
+//			public boolean onLongClick(View arg0) {
+//				Toast.makeText(context, "click", Toast.LENGTH_SHORT).show();
+//				Intent i = new Intent(context, AlarmSetActivity.class);
+//				i.putExtra("COIN_ID", coinID);
+//				context.startActivity(i);
+//				return false;
+//			}
+//		});
 	}
 	
 	 void setColor(int color){

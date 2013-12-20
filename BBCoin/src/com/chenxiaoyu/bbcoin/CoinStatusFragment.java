@@ -26,6 +26,9 @@ public final class CoinStatusFragment extends SherlockFragment {
 	}
 	public void setCoinID(int coinID) {
 		this.coinID = coinID;
+		if (coinStatusView != null) {
+			coinStatusView.setCoinID(coinID);
+		}
 	}
 
 	CoinStatusView coinStatusView;

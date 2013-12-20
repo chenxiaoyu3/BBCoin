@@ -35,6 +35,7 @@ public class CoinListDetailActivity extends SherlockFragmentActivity implements 
         initIDs();       
         init();
         
+        
     }
     
     @Override
