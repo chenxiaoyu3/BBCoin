@@ -308,8 +308,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		@Override
 		protected void onPostExecute(Object arg0) {
-			DataCenter.getInstance().updateCoinsPrice((CoinsPrice)arg0);
 			if(arg0 != null){
+				DataCenter.getInstance().updateCoinsPrice((CoinsPrice)arg0);
 				for(SingleCoinView view : coinsViews){
 					view.doRefresh();
 				}

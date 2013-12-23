@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView 
+            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -30,7 +30,7 @@
                 android:textSize="15sp"
                 android:textColor="@color/gray"
                 android:text="@string/buyPrice"/>
-            <TextView
+            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView 
+            <com.chenxiaoyu.bbcoin.widget.AutofitTextView  
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -80,7 +80,7 @@
                 android:textSize="15sp"
                 android:textColor="@color/gray"
                 android:text="@string/sellPrice"/>
-            <TextView
+            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

@@ -9,6 +9,7 @@ import com.chenxiaoyu.bbcoin.MainActivity;
 import com.chenxiaoyu.bbcoin.R;
 import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
+import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
 import com.chenxiaoyu.bbcoin.model.Order;
 
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class CoinStatusView extends LinearLayout{
@@ -32,6 +34,7 @@ public class CoinStatusView extends LinearLayout{
 	View viewOrders;
 	ListView listViewOrdersBuy, listViewOrdersSell;
 	LinearLayout buyOrdersView, sellOrdersView;
+	TextView nameTextView, priceTextView;
 	Context context;
 
 	Date lastRefreshUITime;
@@ -41,6 +44,8 @@ public class CoinStatusView extends LinearLayout{
 		public void handleMessage(Message arg0) {
 			switch (arg0.what) {
 			case 0:
+				nameTextView.setText(Coin.sGetStrName(coinID));
+				priceTextView.setText(String.format("%.3f", DataCenter.getInstance().getCoinsPrice().prices.get(coinID).getPrice()));
 				buyOrdersView.removeAllViews();
 				sellOrdersView.removeAllViews();
 				CoinStatus cs = (CoinStatus)arg0.obj;
@@ -78,7 +83,8 @@ public class CoinStatusView extends LinearLayout{
 
 		this.buyOrdersView = (LinearLayout)findViewById(R.id.v_orders_buy);
 		this.sellOrdersView = (LinearLayout)findViewById(R.id.v_orders_sell);
-	
+		this.nameTextView = (TextView)findViewById(R.id.tv_coinstatus_name);
+		this.priceTextView = (TextView)findViewById(R.id.tv_coinstatus_curPrice);
 	}
 	private void init()
 	{
