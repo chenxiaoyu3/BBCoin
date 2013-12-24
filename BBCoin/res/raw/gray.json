@@ -26,7 +26,7 @@
 			"color":-16777216,
 			"isFromFile":false,
 			"fontStyle":"NORMAL",
-			"size":12
+			"size":20
 		},
 		"isAntiAlias":true,
 		"outlineStyle":"DASH",
@@ -43,7 +43,7 @@
 			"color":-16777216,
 			"isFromFile":false,
 			"fontStyle":"NORMAL",
-			"size":12
+			"size":20
 		},
 		"isAntiAlias":true,
 		"outlineStyle":"SOLID",

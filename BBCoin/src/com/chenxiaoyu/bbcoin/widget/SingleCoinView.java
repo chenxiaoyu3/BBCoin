@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -26,20 +27,22 @@ public class SingleCoinView extends LinearLayout{
     int coinID;
     double mLastPrice;
     Context context;
+
     public SingleCoinView(Context context)
     {
         super(context);
+        this.context = context;
         LayoutInflater.from(context).inflate(R.layout.layout_singlecoin, this);
         initID();
         init();
-        this.context = context;
+        
     }
 
 	private void initID()
 	{
 		this.priceTextView = (TextView)findViewById(R.id.tv_singlecoin_price);
 		this.nameTextView = (TextView)findViewById(R.id.tv_singlecoin_name);
-//		this.mButton = (Button)findViewById(R.id.bt_singlecoin);
+
 	}
 	private void init()
 	{
@@ -66,10 +69,13 @@ public class SingleCoinView extends LinearLayout{
 		this.nameTextView.setText(Coin.sGetStrName(id));
 		doRefresh();
 	}
-	
+	public int getCoinID(){
+		return this.coinID;
+	}
 	public void doRefresh(){
 		Coin c = DataCenter.getInstance().getCoinsPrice().prices.get(coinID);
 		double newPrice = c.getPrice();
+		
 		this.priceTextView.setText(String.format("%.3f", newPrice));
 		if (mLastPrice != 0 && newPrice != 0) {
 			

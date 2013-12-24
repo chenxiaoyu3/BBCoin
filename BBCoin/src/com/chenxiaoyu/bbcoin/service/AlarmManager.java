@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.chenxiaoyu.bbcoin.PreferenceManager;
+import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.PriceAlarm;
 
 import android.content.Context;
@@ -36,6 +37,16 @@ public enum AlarmManager {
 			ret.largerThan = b;
 		}
 		return ret;
+	}
+	
+	public boolean needAlarm(Context context){
+		for(int i = 0; i < Coin.COINS.length; i++){
+			PriceAlarm pa = getPriceAlarm(context, i);
+			if (pa != null &&(pa.lessThan != 0 || pa.largerThan != 0)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

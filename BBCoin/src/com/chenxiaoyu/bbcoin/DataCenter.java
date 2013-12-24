@@ -10,6 +10,7 @@ import android.R.integer;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
 import com.chenxiaoyu.bbcoin.model.CoinsPrice;
+import com.chenxiaoyu.bbcoin.model.OnDataCenterUpdate;
 import com.chenxiaoyu.bbcoin.model.Order;
 
 public class DataCenter {
@@ -51,6 +52,9 @@ public class DataCenter {
 			cs.sellOrders.clear();
 			cs.sellOrders.addAll(coinStatus.sellOrders);
 		}
+		for(OnDataCenterUpdate lis : mToNotify){
+			lis.onTradeListUpdate();
+		}
 	}
 	
 	CoinsPrice mCoinsPrice;
@@ -61,6 +65,9 @@ public class DataCenter {
 		mCoinsPrice.updateTime = cp.updateTime;
 		for(int i = 0; i < Coin.COINS.length; i++){
 			mCoinsPrice.prices.get(i).setPrice(cp.prices.get(i).getPrice());
+		}
+		for(OnDataCenterUpdate lis : mToNotify){
+			lis.onPriceUpdate();
 		}
 	}
 	//------- global data
@@ -89,6 +96,19 @@ public class DataCenter {
 		return instance;
 	}
 	
+	List<OnDataCenterUpdate> mToNotify = new ArrayList<OnDataCenterUpdate>();
+	public void addListener(OnDataCenterUpdate listener){
+		if (listener == null) {
+			return;
+		}
+		mToNotify.add(listener);
+	}
+	public void removeListener(OnDataCenterUpdate listener){
+		if (listener == null) {
+			return;
+		}
+		mToNotify.remove(listener);
+	}
 	
 	
 }

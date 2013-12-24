@@ -15,33 +15,63 @@
 	        android:layout_weight="4"
 	        android:textSize="22sp"
 	        android:text="BTC"
-	        android:textColor="@color/silver"/>
+	        android:textColor="@color/white"/>
         <LinearLayout 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1">
-            <TextView 
+            <com.chenxiaoyu.bbcoin.widget.PriceTextView 
 	            android:id="@+id/tv_coinstatus_curPrice"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:textSize="22sp"
-	            android:textColor="@color/olive"
-	            android:text="2344.34"/>
+	            android:textColor="@color/yellow"
+	            android:text="0000.00"/>
         </LinearLayout>
         
     </LinearLayout>
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/silver"
+            android:text="@string/volume24"/>
+        <TextView 
+            android:id="@+id/tv_coinstatus_volume24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:textColor="@color/yellow"
+            android:text="xxxxxx.xx"/>
+    </LinearLayout>
     <View 
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/line_solid"/>
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/seperator"/>
 
     <!-- orders -->
 	    <include
 	        android:id="@+id/v_coinstatus_orders" 
 	        layout="@layout/layout_orders"/>
     <!-- recent trade -->
-
+ 	<View 
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/seperator"/>
+ 	
+ 	<Button 
+        android:id="@+id/bt_coinstatus_chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="K-Chart"/>
    
 </LinearLayout>

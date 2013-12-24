@@ -76,4 +76,12 @@ public class Utils {
 	public static int numberRound(double d){
 		return new BigDecimal(d).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 	}
+	
+	public static int getScale(double v){
+        if (v!=v || v == Double.POSITIVE_INFINITY || v == Double.NEGATIVE_INFINITY)
+            return 0;//throw exception or return any other stuff
+
+        BigDecimal d = new BigDecimal(v);
+        return Math.max(0, d.stripTrailingZeros().scale());
+    }
 }

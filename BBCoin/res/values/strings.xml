@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">BBCoin</string>
+    <string name="app_name">BB看盘</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 	<string name="sell">卖</string>
@@ -9,8 +9,9 @@
 	
 	<string name="buyPrice">买入价/￥</string>
 	<string name="sellPrice">卖出价/￥</string>
+
 	<string name="sumPrice">总额/￥</string>
-	
+	<string name="volume24">成交总额/24h</string>
 	<string name="day">d</string>
 	<string name="hour"></string>
 	<string name="minite">分</string>
@@ -24,4 +25,5 @@
 	<string name="cancel">取消</string>
 	
 	<string name="alarm_succ">设置成功</string>
+	<string name="set_alarm">报警设置</string>
 </resources>

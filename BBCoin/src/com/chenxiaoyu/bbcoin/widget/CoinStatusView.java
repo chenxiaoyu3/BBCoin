@@ -5,15 +5,18 @@ import java.util.Date;
 import java.util.List;
 
 import com.chenxiaoyu.bbcoin.DataCenter;
+import com.chenxiaoyu.bbcoin.KChartActivity;
 import com.chenxiaoyu.bbcoin.MainActivity;
 import com.chenxiaoyu.bbcoin.R;
 import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
+import com.chenxiaoyu.bbcoin.model.OnDataCenterUpdate;
 import com.chenxiaoyu.bbcoin.model.Order;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -22,22 +25,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CoinStatusView extends LinearLayout{
+public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 
 	public final String TAG = "CoinStatusView";
 	View viewOrders;
 	ListView listViewOrdersBuy, listViewOrdersSell;
 	LinearLayout buyOrdersView, sellOrdersView;
-	TextView nameTextView, priceTextView;
+	TextView nameTextView;
+	PriceTextView priceTextView;
+	TextView buySumTextView, sellSumTextView;
+	Button kChartButton;
 	Context context;
 
 	Date lastRefreshUITime;
+	
 	int coinID;
 	Handler handler = new Handler(){
 		@Override
@@ -49,18 +59,23 @@ public class CoinStatusView extends LinearLayout{
 				buyOrdersView.removeAllViews();
 				sellOrdersView.removeAllViews();
 				CoinStatus cs = (CoinStatus)arg0.obj;
+				float buySum = 0, sellSum = 0;
 				for (Order order : cs.buyOrders) {
 					SingleOrderView view = new SingleOrderView(context);
 					view.setOrder(order);
 					buyOrdersView.addView(view);
+					buySum += order.sum;
 				}
 				for (Order order : cs.sellOrders) {
 					SingleOrderView view = new SingleOrderView(context);
 					view.setOrder(order);
 					sellOrdersView.addView(view);
+					sellSum += order.sum;
 				}
 				
 				lastRefreshUITime = cs.updateTime;
+				buySumTextView.setText(String.format("%.1f", buySum));
+				sellSumTextView.setText(String.format("%.1f",sellSum));
 				break;
 
 			default:
@@ -72,26 +87,40 @@ public class CoinStatusView extends LinearLayout{
 	public CoinStatusView(Context context) {
 		super(context);
 		this.context = context;
-        LayoutInflater.from(context).inflate(R.layout.layout_coinstatus, this);
         initID();
         init();
 	}
-	
+	public CoinStatusView(Context context, AttributeSet attrs){
+		super(context, attrs);
+		this.context = context;        
+        initID();
+        init();
+	}
 	private void initID()
 	{
+		LayoutInflater.from(context).inflate(R.layout.layout_coinstatus, this);
 		this.viewOrders = findViewById(R.id.v_coinstatus_orders);
-
 		this.buyOrdersView = (LinearLayout)findViewById(R.id.v_orders_buy);
 		this.sellOrdersView = (LinearLayout)findViewById(R.id.v_orders_sell);
 		this.nameTextView = (TextView)findViewById(R.id.tv_coinstatus_name);
-		this.priceTextView = (TextView)findViewById(R.id.tv_coinstatus_curPrice);
+		this.priceTextView = (PriceTextView)findViewById(R.id.tv_coinstatus_curPrice);
+		this.kChartButton = (Button)findViewById(R.id.bt_coinstatus_chart);
+		this.buySumTextView = (TextView)findViewById(R.id.tv_orders_buySum);
+		this.sellSumTextView = (TextView)findViewById(R.id.tv_orders_sellSum);
 	}
 	private void init()
 	{
-//		this.buyOrdersListViewAdapter = new OrdersListViewAdapter(cs.buyOrders);
-//		this.sellOrdersListViewAdapter = new OrdersListViewAdapter(cs.sellOrders);
-//		this.listViewOrdersBuy.setAdapter(buyOrdersListViewAdapter);
-//		this.listViewOrdersSell.setAdapter(sellOrdersListViewAdapter);
+		this.kChartButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(context, KChartActivity.class);
+				intent.putExtra("coinID", coinID);
+				context.startActivity(intent);
+				
+			}
+		});
+		this.priceTextView.setMaxFractionNum(3);
 	}
 
 	public int getCoinID() {
@@ -99,21 +128,32 @@ public class CoinStatusView extends LinearLayout{
 	}
 	public void setCoinID(int id) {
 		this.coinID = id;
+		doRefresh();
 	}
 	
 	public void doRefresh(){
 //		Log.d(TAG, coinID + " refresh");
 		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
-		if (this.lastRefreshUITime  != null && Utils.timeCompareTo(cs.updateTime, this.lastRefreshUITime) <= 0) {
-			Log.d(TAG,"No need");
-			return;
-		}
+//		if (this.lastRefreshUITime  != null) {
+//			Log.d(TAG,"No need");
+//			return;
+//		}
 		Message msg = new Message();
 		msg.what = 0;
 		msg.obj = cs;
 		handler.sendMessageDelayed(msg, 200);
 		
 	}
+	
+	@Override
+	public void onPriceUpdate() {
+		
+	}
+	@Override
+	public void onTradeListUpdate() {
+		doRefresh();
+	}
+
 	
 //	class OrdersListViewAdapter extends BaseAdapter{
 //		

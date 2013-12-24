@@ -27,7 +27,10 @@ public class AlarmSetActivity extends SherlockActivity{
 		initID();
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+		getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.layout_actionbar_title);
+        ((TextView)getSupportActionBar().getCustomView().findViewById(R.id.tv_actionbarTitle)).setText(getString(R.string.set_alarm));
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
 	}
 	
 	@Override
@@ -88,7 +91,7 @@ public class AlarmSetActivity extends SherlockActivity{
 		
 		float largerThan = 0;
 		try {
-			lessThan = Float.valueOf(mLargerEditText.getText().toString());
+			largerThan = Float.valueOf(mLargerEditText.getText().toString());
 		} catch (Exception e) {}
 		AlarmManager.Instance.setPriceAlarm(this, mCoinID, lessThan, largerThan);
 		Toast.makeText(this, R.string.alarm_succ, Toast.LENGTH_SHORT).show();

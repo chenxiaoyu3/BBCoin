@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main_3"
     android:orientation="vertical" >
 
     <TextView 
@@ -15,28 +15,34 @@
         android:layout_gravity="center_horizontal"
         android:text="MEC"/>
     <LinearLayout 
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="18dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
         android:layout_gravity="center_horizontal">
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            
             android:textColor="@android:color/white"
             android:text="@string/lessThan"/>
         <EditText
             android:id="@+id/et_alarmset_lessthan"
-            android:layout_width="100dp"
+            android:layout_width="0dp"
             android:layout_marginLeft="10dp"
+            android:layout_weight="7"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:inputType="numberDecimal"/>
     </LinearLayout>
     <LinearLayout 
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
         android:layout_gravity="center_horizontal">
         <TextView 
             android:layout_width="wrap_content"
@@ -45,9 +51,10 @@
             android:text="@string/largerThan"/>
         <EditText
             android:id="@+id/et_alarmset_largerthan"
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:textColor="@android:color/white"
             android:inputType="numberDecimal"/>
     </LinearLayout>
     

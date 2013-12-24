@@ -1,5 +1,6 @@
 package com.chenxiaoyu.bbcoin;
 
+
 import com.chenxiaoyu.bbcoin.service.BBCoinService;
 
 import android.app.Application;
@@ -13,8 +14,13 @@ public class BBCoinApp extends Application{
 	public void onCreate() {
 		AppContext = this;
 		super.onCreate();
-//		Intent i = new Intent(this, BBCoinService.class);
-//		startService(i);
+		Intent i = new Intent(this, BBCoinService.class);
+		startService(i);
+		try {
+			org.stockchart.core.Theme.setCurrentThemeFromResources(this, R.raw.dark);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

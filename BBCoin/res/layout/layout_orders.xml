@@ -15,27 +15,29 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/buy"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/green"/>
         
         <LinearLayout 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
+            <TextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:textColor="@color/gray"
+                android:singleLine="true"
                 android:text="@string/buyPrice"/>
-            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
+            <TextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textSize="15sp"
+                android:textSize="13sp"
+                android:singleLine="true"
                 android:textColor="@color/gray"
                 android:text="@string/sumPrice"/>
         </LinearLayout>
@@ -47,14 +49,40 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             />
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!--  
+            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="15sp"
+                android:textColor="@color/gray"
+                android:text="@string/buySum"/>
+                -->
+            <com.chenxiaoyu.bbcoin.widget.PriceTextView
+                android:id="@+id/tv_orders_buySum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                />
+        </LinearLayout>
+        
     </LinearLayout>
     <View
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:background="@drawable/line"
+        android:background="@color/semi_gray_2"
         />
     <LinearLayout 
         android:layout_width="0dp"
@@ -66,26 +94,29 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/sell"
-            android:textSize="20sp"
+            android:singleLine="true"
+            android:textSize="18sp"
             android:textColor="@color/red"/>
         <LinearLayout 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <com.chenxiaoyu.bbcoin.widget.AutofitTextView  
+            <TextView  
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textSize="15sp"
+                android:textSize="13sp"
+                android:singleLine="true"
                 android:textColor="@color/gray"
                 android:text="@string/sellPrice"/>
-            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
+            <TextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:textSize="15sp"
+                android:textSize="13sp"
+                android:singleLine="true"
                 android:textColor="@color/gray"
                 android:text="@string/sumPrice"/>
         </LinearLayout>
@@ -95,6 +126,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"/>
+         <!--  
+          <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="16sp"
+                android:textColor="@color/gray"
+                android:text="@string/sellSum"/>
+                -->
+            <com.chenxiaoyu.bbcoin.widget.PriceTextView
+                android:id="@+id/tv_orders_sellSum" 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                />
     </LinearLayout>
     
 

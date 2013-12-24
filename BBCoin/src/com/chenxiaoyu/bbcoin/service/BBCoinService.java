@@ -75,16 +75,19 @@ public class BBCoinService extends Service {
 		if (mTimer != null) {
 			mTimer.cancel();
 		}
-		mTimer = new Timer();
-		mTimer.schedule(new TimerTask() {
-			
-			@Override
-			public void run() {
-				Log.v(TAG, "task run!");
-				mHandler.sendEmptyMessage(0);
+		if (AlarmManager.Instance.needAlarm(this)) {
+			mTimer = new Timer();
+			mTimer.schedule(new TimerTask() {
 				
-			}
-		}, 10000, 1*60*1000);
+				@Override
+				public void run() {
+					Log.v(TAG, "task run!");
+					mHandler.sendEmptyMessage(0);
+					
+				}
+			}, 10000, 10*60*1000);
+		}
+		
 		return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -121,10 +124,8 @@ public class BBCoinService extends Service {
 		
 		@Override
 		protected void onPostExecute(Object arg0) {
-			
-
-			CoinsPrice cp = (CoinsPrice)arg0;
 			if(arg0 != null){
+				CoinsPrice cp = (CoinsPrice)arg0;
 				for(int i = 0; i < Coin.COINS.length; i++){
 					PriceAlarm a = AlarmManager.Instance.getPriceAlarm(BBCoinService.this, i);
 					if (a != null) {

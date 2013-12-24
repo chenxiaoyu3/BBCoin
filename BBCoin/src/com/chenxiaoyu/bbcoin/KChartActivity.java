@@ -37,6 +37,7 @@ public class KChartActivity extends StockChartActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
+		
 		//cxy: initChart() called first
 		super.onCreate(savedInstanceState);
 		mCoinID = getIntent().getIntExtra("coinID", 0);
