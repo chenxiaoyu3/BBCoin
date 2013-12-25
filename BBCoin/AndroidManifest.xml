@@ -26,10 +26,7 @@
             android:name="com.chenxiaoyu.bbcoin.CoinListDetailActivity"
             android:theme="@style/Theme.StyledActionBar"
             >
-             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             
         </activity>
         <activity 
             android:name="com.chenxiaoyu.bbcoin.KChartActivity"
@@ -38,6 +35,14 @@
         <activity 
             android:name="com.chenxiaoyu.bbcoin.AlarmSetActivity"
             android:theme="@style/Theme.StyledActionBar"></activity>
+        <activity 
+            android:name="com.chenxiaoyu.bbcoin.CoinTableActivity"
+            android:theme="@style/Theme.StyledActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <service android:name="com.chenxiaoyu.bbcoin.service.BBCoinService" android:process=":remote"/> 
         <receiver 
