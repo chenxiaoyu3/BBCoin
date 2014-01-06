@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.R.integer;
 
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
@@ -43,7 +42,7 @@ public class DataCenter {
 		return mAllCoinStatus;
 	}
 	
-	public void updateTradeList(List<CoinStatus> data){
+	public synchronized void updateTradeList(List<CoinStatus> data){
 		for (CoinStatus coinStatus : data) {
 			CoinStatus cs = mAllCoinStatus.get( coinStatus.getCoinID() );
 			cs.buyOrders.clear();
@@ -57,11 +56,23 @@ public class DataCenter {
 		}
 	}
 	
+	public synchronized void updateSingleTrade(CoinStatus coinStatus){
+		CoinStatus cs = mAllCoinStatus.get( coinStatus.getCoinID() );
+		cs.buyOrders.clear();
+		cs.buyOrders.addAll(coinStatus.buyOrders);
+		cs.updateTime = coinStatus.updateTime;
+		cs.sellOrders.clear();
+		cs.sellOrders.addAll(coinStatus.sellOrders);
+		for(OnDataCenterUpdate lis : mToNotify){
+			lis.onTradeListUpdate();
+		}
+	}
+	
 	CoinsPrice mCoinsPrice;
 	public CoinsPrice getCoinsPrice() {
 		return mCoinsPrice;
 	}
-	public void updateCoinsPrice(CoinsPrice cp){
+	public synchronized void updateCoinsPrice(CoinsPrice cp){
 		mCoinsPrice.updateTime = cp.updateTime;
 		for(int i = 0; i < Coin.COINS.length; i++){
 			mCoinsPrice.prices.get(i).setPrice(cp.prices.get(i).getPrice());

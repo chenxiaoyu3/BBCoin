@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.chenxiaoyu.bbcoin.BBCoinApp;
 import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.R;
+import com.chenxiaoyu.bbcoin.TimerManager;
+import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
@@ -21,21 +24,26 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 public class CoinTableView extends LinearLayout{
-
+	public static final String TAG = "CoinTableView";
 	Context mContext;
 	TableLayout mTableView; 
 	PullToRefreshScrollView mPullToRefreshScrollView;
 	FetchDataTask mFetchDataTask;
 	List<SingleCoinBlockView> mSingleCoinBlockViews;
 	Handler mHandler;
-	Timer mTimer;
+//	public static Timer sTimer;
+	TimerTask mRefreshTask;
 	public CoinTableView(Context context) {
 		super(context);
 		this.mContext = context;
@@ -50,7 +58,18 @@ public class CoinTableView extends LinearLayout{
 		initID();
 		init();
 	}
-
+	@Override
+	protected void onAttachedToWindow() {
+		Log.v(TAG, "attached");
+		TimerManager.Instance.addTask(mRefreshTask);
+		super.onAttachedToWindow();
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		Log.v(TAG, "Detached");
+		TimerManager.Instance.removeTask(mRefreshTask);
+		super.onDetachedFromWindow();
+	}
 	private void initID(){
 		mTableView = (TableLayout)findViewById(R.id.v_coinTable);
 		mPullToRefreshScrollView = (PullToRefreshScrollView)findViewById(R.id.v_coinTable_scroll);
@@ -58,9 +77,10 @@ public class CoinTableView extends LinearLayout{
 	private void init(){
 		mSingleCoinBlockViews = new ArrayList<SingleCoinBlockView>();
 		TableRow row = null;
+		TableRow.LayoutParams lp = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f);
 		int i = 0;
 		for(; i < Coin.COINS.length; i++){
-			if (i % 3 == 0) {
+			if (i % 4 == 0) {
 				if (row != null) {
 					mTableView.addView(row);
 				}
@@ -68,12 +88,18 @@ public class CoinTableView extends LinearLayout{
 			}
 			SingleCoinBlockView view = new SingleCoinBlockView(mContext);
 			view.setCoinID(i);
-			row.addView(view);
+			view.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					BBCoinApp.MainActivity.onCoinBlockClicked(  ((SingleCoinBlockView)arg0).mCoinID );
+				}
+			});
+			row.addView(view,lp);
 			mSingleCoinBlockViews.add(view);
 		}
-		if (i % 3 != 0) {
-			mTableView.addView(row);
-		}
+		mTableView.addView(row);
+		
 		
 		mPullToRefreshScrollView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
 
@@ -107,14 +133,13 @@ public class CoinTableView extends LinearLayout{
 			}
 		};
 		
-		mTimer = new Timer();
-		mTimer.schedule(new TimerTask() {
+		mRefreshTask = new TimerTask() {
 			
 			@Override
 			public void run() {
 				mHandler.sendEmptyMessage(1);
 			}
-		}, 10*1000, 30*1000);
+		};
 		mHandler.sendEmptyMessage(2);
 	}
 	
@@ -152,6 +177,7 @@ public class CoinTableView extends LinearLayout{
 			}
 			mPullToRefreshScrollView.onRefreshComplete();
 			mFetchDataTask = null;
+			mPullToRefreshScrollView.getLoadingLayoutProxy().setLastUpdatedLabel(Utils.timeFormat(new Date(), "HH:mm:ss"));
 		}
     }
 	

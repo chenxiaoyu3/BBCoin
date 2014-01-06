@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="25dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
     android:orientation="horizontal"
+    android:background="@drawable/bg_singlecoin"
 	>
 	<!--  
     <Button 
@@ -18,7 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="4dp"
-        android:text="222"
         android:textColor="@color/white"
         />
     <TextView 
@@ -32,6 +33,5 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:textColor="@color/white"
-        android:text="2222"
         />
 </LinearLayout>

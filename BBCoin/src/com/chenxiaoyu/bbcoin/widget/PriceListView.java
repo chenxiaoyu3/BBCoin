@@ -26,13 +26,16 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.chenxiaoyu.bbcoin.AlarmSetActivity;
+import com.chenxiaoyu.bbcoin.BBCoinApp;
 import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.MainActivity;
 import com.chenxiaoyu.bbcoin.R;
+import com.chenxiaoyu.bbcoin.TimerManager;
 import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
@@ -42,22 +45,25 @@ import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
 public class PriceListView extends LinearLayout{
 	
 	public static final String TAG = "PriceListFragment";
-	PullToRefreshListView mListView;
+
+	PullToRefreshScrollView mPullToRefreshScrollView;
+	LinearLayout mPriceListContainer;
+	OnItemClickListener mOnItemClickListener;
 	ILoadingLayout mPriceListLoadingLayout;
 	Context mContext;
 	View mView;
-	PriceListViewAdatper mPriceListViewAdatper;
+
 	float mWeight;
 	
-//	ProgressBar mProgressBar;
 	TextView mFreshTimeTextView;
 	
 	FetchDataTask mFetchDataTask;
-	Timer mTimer;
+	TimerTask mUpdateTask;
 	Date mLastUpdateTime;
 	Handler mHandler = new Handler(){
     	public void handleMessage(android.os.Message msg) {
@@ -94,19 +100,17 @@ public class PriceListView extends LinearLayout{
 	
 	private void initID(){
 		LayoutInflater.from(mContext).inflate(R.layout.layout_pricelist, this);
-		mListView = (PullToRefreshListView)findViewById(R.id.lv_pricelist);
-		mPriceListLoadingLayout = mListView.getLoadingLayoutProxy();
-//		mProgressBar = (ProgressBar)findViewById(R.id.pb_coinListDetai_loading);
-//		mFreshTimeTextView = (TextView)findViewById(R.id.tv_coinListDetail_refresh);
+		mPullToRefreshScrollView = (PullToRefreshScrollView)findViewById(R.id.lv_pricelist);
+		mPriceListContainer = (LinearLayout)findViewById(R.id.v_priceListContainer);
+		mPriceListLoadingLayout = mPullToRefreshScrollView.getLoadingLayoutProxy();
+
 	}
 	private void init(){
-		mPriceListViewAdatper = new PriceListViewAdatper();
-		mListView.setAdapter(mPriceListViewAdatper);
-		mListView.setOnItemClickListener((OnItemClickListener)mContext);
-		mListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		
+		mPullToRefreshScrollView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
 
 			@Override
-			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
 				
 				if(mFetchDataTask == null){
 					mFetchDataTask = new FetchDataTask();
@@ -114,76 +118,96 @@ public class PriceListView extends LinearLayout{
 				}
 			}
 		});
-		mTimer = new Timer();
-        mTimer.schedule(new TimerTask() {
+		mUpdateTask = new TimerTask() {
 			
 			@Override
 			public void run() {
 				mHandler.sendEmptyMessage(0);
 			}
-		}, 1000, 1*30*1000);
-        mTimer.schedule(new TimerTask() {
-			
-			@Override
-			public void run() {
-				mHandler.sendEmptyMessage(1);
-			}
-		}, 1000, 10*1000);
-        mListView.getRefreshableView().setOnItemLongClickListener(new OnItemLongClickListener() {
+		};
 
-			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				Intent i = new Intent(mContext, AlarmSetActivity.class);
-				i.putExtra("COIN_ID", ((SingleCoinView)arg1).getCoinID());
-				mContext.startActivity(i);
-				return false;
-			}
-		});
+		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
+		for(int i = 0;i < Coin.COINS.length; i++){
+			SingleCoinView view = new SingleCoinView(mContext);
+			view.setCoinID(i);
+			mPriceListContainer.addView(view, lp);
+			view.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					mOnItemClickListener.onItemClick(null, arg0, 0, 0);
+					
+				}
+			});
+			view.setOnLongClickListener(new View.OnLongClickListener() {
+				
+				@Override
+				public boolean onLongClick(View v) {
+					Intent i = new Intent(mContext, AlarmSetActivity.class);
+					i.putExtra("COIN_ID", ((SingleCoinView)v).getCoinID());
+					mContext.startActivity(i);
+					return false;
+				}
+			});
+		}
+		
 	}
 	
+	@Override
+	protected void onAttachedToWindow() {
+		TimerManager.Instance.addTask(mUpdateTask);
+		super.onAttachedToWindow();
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		TimerManager.Instance.removeTask(mUpdateTask);
+		super.onDetachedFromWindow();
+	}
+	public void setOnListItemClickListener(OnItemClickListener listener){
+		mOnItemClickListener = listener;
+	}
 	
 	
 	public void doRefresh(){
-		mPriceListViewAdatper.doRefresh();
+//		mPriceListViewAdatper.doRefresh();
 	}
-	class PriceListViewAdatper extends BaseAdapter{
-		
-		List<SingleCoinView> list = new ArrayList<SingleCoinView>();
-		PriceListViewAdatper(){
-			for(int i = 0;i < Coin.COINS.length; i++){
-				SingleCoinView view = new SingleCoinView(mContext);
-				view.setCoinID(i);
-				list.add(view);
-			}
-		}
-		@Override
-		public int getCount() {
-			return Coin.COINS.length;
-			
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return arg0;
-		}
-
-		@Override
-		public long getItemId(int arg0) {
-			return arg0;
-		}
-
-		@Override
-		public View getView(int arg0, View arg1, ViewGroup arg2) {
-			return list.get(arg0);
-		}
-		
-		public void doRefresh(){
-			for (SingleCoinView view : list) {
-				view.doRefresh();
-			}
-		}
-	}
+//	class PriceListViewAdatper extends BaseAdapter{
+//		
+//		List<SingleCoinView> list = new ArrayList<SingleCoinView>();
+//		PriceListViewAdatper(){
+//			for(int i = 0;i < Coin.COINS.length; i++){
+//				SingleCoinView view = new SingleCoinView(mContext);
+//				view.setCoinID(i);
+//				list.add(view);
+//			}
+//		}
+//		@Override
+//		public int getCount() {
+//			return Coin.COINS.length;
+//			
+//		}
+//
+//		@Override
+//		public Object getItem(int arg0) {
+//			return arg0;
+//		}
+//
+//		@Override
+//		public long getItemId(int arg0) {
+//			return arg0;
+//		}
+//
+//		@Override
+//		public View getView(int arg0, View arg1, ViewGroup arg2) {
+//			return list.get(arg0);
+//		}
+//		
+//		public void doRefresh(){
+//			for (SingleCoinView view : list) {
+//				view.doRefresh();
+//			}
+//		}
+//	}
 	
 	
 //	class FetchPricesTask extends AsyncTask<Object, Object, Object>{
@@ -218,7 +242,7 @@ public class PriceListView extends LinearLayout{
     	@Override
     	protected void onPreExecute() {
     		super.onPreExecute();
-    		mListView.setRefreshing();
+    		mPullToRefreshScrollView.setRefreshing();
     	}
 		@Override
 		protected Object doInBackground(Object... arg0) {
@@ -227,16 +251,16 @@ public class PriceListView extends LinearLayout{
 				DataCenter.getInstance().updateCoinsPrice(cp);
 			}
 			
-			List<CoinStatus> cs = Commu.getInstance().fetchAllTradeList();
-			if (cs != null) {
-				DataCenter.getInstance().updateTradeList(cs);
-			}
-			return cp != null && cs != null;
+//			CoinStatus cs = Commu.getInstance().fetchSingleTradeList(CoinStatusView.CUR_COINID);
+//			if (cs != null) {
+//				DataCenter.getInstance().updateSingleTrade(cs);
+//			}
+			return cp ;
 		}
 		
 		@Override
 		protected void onPostExecute(Object result) {
-			mListView.onRefreshComplete();
+			mPullToRefreshScrollView.onRefreshComplete();
 			doRefresh();
 			mFetchDataTask = null;
 			mLastUpdateTime = new Date();

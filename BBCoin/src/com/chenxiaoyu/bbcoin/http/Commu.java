@@ -28,6 +28,7 @@ import com.chenxiaoyu.bbcoin.model.ChartPoint;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
 import com.chenxiaoyu.bbcoin.model.CoinsPrice;
+import com.chenxiaoyu.bbcoin.model.KChartType;
 
 
 public class Commu  {
@@ -96,9 +97,9 @@ public class Commu  {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         
         return null;
@@ -121,9 +122,9 @@ public class Commu  {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         
         return null;
@@ -219,10 +220,44 @@ public class Commu  {
     	return ret;
     }
     
-    final String URL_K_CHART = "http://www.btc38.com/trade/getTradeTimeLine.php?coinname=";
-    public List<ChartPoint> fetchTimeLine(int coinID){
+    final String URL_SINGLE_TRADE = URL_BASE + "API/single_trade_list/";
+    public CoinStatus fetchSingleTradeList(int coinID){
+    	CoinStatus ret = null;
+    	String data = sendHttpClientGet(URL_SINGLE_TRADE+Coin.sGetStrName(coinID));
+    	if (data != null) {		
+    		try {
+    			JSONObject jsonObject = new JSONObject(data);
+
+				ret = CoinStatus.parseJOSN(jsonObject);
+				ret.setCoinID(coinID);
+				ret.updateTime = new Date();
+    		} catch (Exception e) {
+    			ret = null;
+    			e.printStackTrace();
+    		}
+		}
+    	return ret;
+    }
+    
+    final String URL_K_1H = "http://www.btc38.com/trade/getTradeTimeLine.php?coinname=";
+    final String URL_K_5M = "http://www.btc38.com/trade/getTrade5minLine.php?coinname=";
+    final String URL_K_1D = "http://www.btc38.com/trade/getTradeDayLine.php?coinname=";
+    public List<ChartPoint> fetchChartLine(int coinID, KChartType type){
     	List<ChartPoint> ret = new ArrayList<ChartPoint>();
-    	String data = sendHttpClientGet2(URL_K_CHART+Coin.sGetStrName(coinID));
+    	String uu = "";
+    	switch (type) {
+		case OneHour:
+			uu = URL_K_1H;
+			break;
+		case OneDay:
+			uu = URL_K_1D;
+			break;
+		case FiveMin:
+			uu = URL_K_5M;
+		default:
+			break;
+		}
+    	String data = sendHttpClientGet2(uu+Coin.sGetStrName(coinID));
     	if(data != null){
     		try {
 				JSONArray array = new JSONArray(data);

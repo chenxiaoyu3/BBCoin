@@ -3,15 +3,18 @@ package com.chenxiaoyu.bbcoin.widget;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimerTask;
 
 import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.KChartActivity;
 import com.chenxiaoyu.bbcoin.MainActivity;
 import com.chenxiaoyu.bbcoin.R;
+import com.chenxiaoyu.bbcoin.TimerManager;
 import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
+import com.chenxiaoyu.bbcoin.model.CoinsPrice;
 import com.chenxiaoyu.bbcoin.model.OnDataCenterUpdate;
 import com.chenxiaoyu.bbcoin.model.Order;
 
@@ -47,7 +50,9 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 	Context context;
 
 	Date lastRefreshUITime;
-	
+	FetchDataTask mFetchDataTask;
+	TimerTask mTimerTask;
+	public static int CUR_COINID = 0;
 	int coinID;
 	Handler handler = new Handler(){
 		@Override
@@ -77,7 +82,12 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 				buySumTextView.setText(String.format("%.1f", buySum));
 				sellSumTextView.setText(String.format("%.1f",sellSum));
 				break;
-
+			case 1:
+				if (mFetchDataTask == null) {
+					mFetchDataTask = new FetchDataTask();
+					mFetchDataTask.execute(0);
+				}
+				break;
 			default:
 				break;
 			}
@@ -89,6 +99,7 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 		this.context = context;
         initID();
         init();
+        Log.v(TAG, "Finish create");
 	}
 	public CoinStatusView(Context context, AttributeSet attrs){
 		super(context, attrs);
@@ -121,6 +132,14 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 			}
 		});
 		this.priceTextView.setMaxFractionNum(3);
+		mTimerTask = new TimerTask() {
+			
+			@Override
+			public void run() {
+				handler.sendEmptyMessage(1);
+				
+			}
+		};
 	}
 
 	public int getCoinID() {
@@ -132,17 +151,11 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 	}
 	
 	public void doRefresh(){
-//		Log.d(TAG, coinID + " refresh");
 		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
-//		if (this.lastRefreshUITime  != null) {
-//			Log.d(TAG,"No need");
-//			return;
-//		}
 		Message msg = new Message();
 		msg.what = 0;
 		msg.obj = cs;
 		handler.sendMessageDelayed(msg, 200);
-		
 	}
 	
 	@Override
@@ -151,70 +164,39 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 	}
 	@Override
 	public void onTradeListUpdate() {
-		doRefresh();
+//		doRefresh();
 	}
-
+	@Override
+	protected void onAttachedToWindow() {
+		TimerManager.Instance.addTask(mTimerTask);
+		if (DataCenter.getInstance().getAllCoinStatus().get(coinID).buyOrders.size() == 0) {
+			mTimerTask.run();
+		}
+		super.onAttachedToWindow();
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		TimerManager.Instance.removeTask(mTimerTask);
+		super.onDetachedFromWindow();
+	}
 	
-//	class OrdersListViewAdapter extends BaseAdapter{
-//		
-//		List<Order> orders;
-//		@Override
-//		public int getCount() {
-//			return orders.size();
-//		}
-//
-//		@Override
-//		public Object getItem(int arg0) {
-//			return orders.get(arg0);
-//		}
-//
-//		@Override
-//		public long getItemId(int arg0) {
-//			return arg0;
-//		}
-//
-//		@Override
-//		public View getView(int arg0, View arg1, ViewGroup arg2) {
-//			View retView = null;
-//			if (arg1 == null) {
-//				retView = new SingleOrderView(context);
-//				((SingleOrderView)retView).setOrder(orders.get(arg0));
-//			}else{
-//				retView = arg1;
-//				((SingleOrderView)retView).setOrder(orders.get(arg0));
-//			}
-//			return retView;
-//		}
-//		
-//		
-//		public OrdersListViewAdapter(List<Order> orders) {
-//			this.orders = orders;
-//			
-//		}
-//		public void setOrders(List<Order> orders){
-//			this.orders = orders;
-//		}
-//		
-//	}
-	
-//	class FetchDataTask extends AsyncTask<Object, Object, CoinStatus>
-//	{
-//
-//		@Override
-//		protected CoinStatus doInBackground(Object... params) {
-//			CoinStatus cs = Commu.getInstance().fetchCoinStatus(coinName);
-//			return cs;
-//		}
-//		@Override
-//		protected void onPostExecute(CoinStatus result) {
-//			if(result != null){
-//				CoinStatusView.this.setCoinStatus(result);
-//			}else {
-//				Toast.makeText(CoinStatusView.this.context, "Error", Toast.LENGTH_SHORT).show();
-//			}
-//			super.onPostExecute(result);
-////		}
-//		
-//	}
+	class FetchDataTask extends AsyncTask<Object, Object, Object>
+    {
+		@Override
+		protected Object doInBackground(Object... arg0) {
+			CoinStatus cs = Commu.getInstance().fetchSingleTradeList(coinID);
+			if (cs != null) {
+				DataCenter.getInstance().updateSingleTrade(cs);
+			}
+			return cs ;
+		}
+		
+		@Override
+		protected void onPostExecute(Object result) {
+			doRefresh();
+			mFetchDataTask = null;
+			super.onPostExecute(result);
+		}
+    }
 
 }

@@ -3,7 +3,7 @@ package com.chenxiaoyu.bbcoin.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chenxiaoyu.bbcoin.PreferenceManager;
+import com.chenxiaoyu.bbcoin.PreferManager;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.PriceAlarm;
 
@@ -22,14 +22,14 @@ public enum AlarmManager {
 	 * @param lagerThan
 	 */
 	public void setPriceAlarm(Context context, int coinID, float lessThan, float largerThan){
-		PreferenceManager.Instance.set(context, coinID + "_price_lessthan", lessThan);
-		PreferenceManager.Instance.set(context, coinID + "_price_largerthan", largerThan);
+		PreferManager.Instance.set(context, coinID + "_price_lessthan", lessThan);
+		PreferManager.Instance.set(context, coinID + "_price_largerthan", largerThan);
 	}
 	
 	public PriceAlarm getPriceAlarm(Context context, int coinID){
 		PriceAlarm ret = null;
-		Float a = (Float)PreferenceManager.Instance.get(context, coinID + "_price_lessthan");
-		Float b = (Float)PreferenceManager.Instance.get(context, coinID + "_price_largerthan");
+		Float a = (Float)PreferManager.Instance.get(context, coinID + "_price_lessthan");
+		Float b = (Float)PreferManager.Instance.get(context, coinID + "_price_largerthan");
 		if (a != null && b != null) {
 			ret = new PriceAlarm();
 			ret.coinID = coinID;
