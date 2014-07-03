@@ -32,4 +32,16 @@
 	 
 	 <color name="actionbar_red">#8c1c1c</color>
 	 
+	 <color name="green_0">#0F00f00b</color>
+	 <color name="green_1">#1F00f00b</color>
+	 <color name="green_2">#3F00f00b</color>
+	 <color name="green_3">#6F00f00b</color>
+	 <color name="green_4">#EF00f00b</color>
+	 <color name="red_0">#0FFF0000</color>
+	 <color name="red_1">#1FFF0000</color>
+	 <color name="red_2">#3FFF0000</color>
+	 <color name="red_3">#6FFF0000</color>
+	 <color name="red_4">#EFFF0000</color>
+	 <color name="red_5">#FFFF0000</color>
+	 
 </resources>

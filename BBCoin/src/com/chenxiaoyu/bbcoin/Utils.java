@@ -1,12 +1,33 @@
 package com.chenxiaoyu.bbcoin;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.crypto.spec.PSource;
+
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
 
 public class Utils {
 
@@ -84,4 +105,80 @@ public class Utils {
         BigDecimal d = new BigDecimal(v);
         return Math.max(0, d.stripTrailingZeros().scale());
     }
+	
+    public static Bitmap getBitmapFromView(View view, String text) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) 
+            bgDrawable.draw(canvas);
+        else 
+            canvas.drawColor(Color.BLACK);
+        view.draw(canvas);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setTextSize(42);
+        p.setColor(Color.WHITE);
+        p.setShadowLayer(5.0f, 5.0f, 5.0f, Color.BLACK);
+        Rect bounds = new Rect();
+        
+        p.getTextBounds(text, 0, text.length(), bounds);
+        
+        int x = (returnedBitmap.getWidth() - bounds.width() - 10);
+        int y = (returnedBitmap.getHeight() - bounds.height() - 8);
+        
+        canvas.drawText(text, x, y, p);
+        return returnedBitmap;
+    }
+    
+  
+    public static File readSDFile(String file){
+    	File sdchard = Environment.getExternalStorageDirectory();
+    	return new File(sdchard, file);
+    }
+    public static void writeSDFile(byte[] bytes, String name){
+    	InputStream inputStream = null;
+	    FileOutputStream outputStream = null;
+	    try {
+	    	
+	        inputStream = new ByteArrayInputStream( bytes );
+	        File sdchard = Environment.getExternalStorageDirectory();
+	        File file = new File(sdchard, name);
+	        outputStream = new FileOutputStream(file, false);
+	        byte[] buffer = new byte[1024];
+	        int length = 0;
+	        try {
+	            while ((length = inputStream.read(buffer)) > 0){
+	                outputStream.write(buffer, 0, length);
+	            }
+	        } catch (IOException ioe) {
+	            /* ignore */
+	        }
+	    } catch (FileNotFoundException fnfe) {
+	        /* ignore */
+	    } finally {
+	        try {
+	            inputStream.close();
+	        } catch (IOException ioe) {
+	           /* ignore */
+	        }
+	        try {
+	            outputStream.close();
+	        } catch (IOException ioe) {
+	           /* ignore */
+	        }
+	    }
+    }
+    
+    public static Point getScreenSize(Context ctx){
+    	Point ret = new Point();
+    	WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+    	Display display = wm.getDefaultDisplay();
+    	ret.x = display.getWidth();
+    	ret.y = display.getHeight();
+    	return ret;
+    }
+    
+    
+    
 }

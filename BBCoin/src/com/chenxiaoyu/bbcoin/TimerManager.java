@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.util.Log;
+
 
 public enum TimerManager {
 
 	Instance;
 	
+	public String TAG = "TimerManager";
 	private Timer mTimer = new Timer();;
 	private volatile List<TimerTask> mTasks = new LinkedList<TimerTask>();
 
@@ -21,9 +24,11 @@ public enum TimerManager {
 	
 	public void restart(){
 		
-		int sec = Integer.valueOf( (String)PreferManager.Instance.get(BBCoinApp.AppContext, "auto_refresh_delta") ); 
-		mTimer.cancel();
-		mTimer.purge();
+		int sec = Integer.valueOf( (String)PreferManager.Instance().get(BBCoinApp.AppContext, "auto_refresh_delta") ); 
+		if (mTimer != null) {
+			mTimer.cancel();
+			mTimer.purge();
+		}
 		mTimer = new Timer();
 		mTimer.schedule(new TimerTask() {
 			
@@ -48,4 +53,15 @@ public enum TimerManager {
 		}
 	}
 	
+	public void pause(){
+		Log.v(TAG, "Pause");
+		if (mTimer != null) {
+			mTimer.cancel();
+			mTimer.purge();
+		}
+	}
+	public void resume(){
+		Log.v(TAG, "resume");
+		restart();
+	}
 }

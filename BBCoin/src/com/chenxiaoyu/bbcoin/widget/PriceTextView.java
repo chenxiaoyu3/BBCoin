@@ -2,7 +2,6 @@ package com.chenxiaoyu.bbcoin.widget;
 
 import java.util.Locale;
 
-import com.chenxiaoyu.bbcoin.Utils;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -30,8 +29,8 @@ public class PriceTextView extends TextView{
 			
 			if (mLastValue != 0) {
 				float now = Float.valueOf(text.toString());
-				float gap = Math.abs(now - mLastValue);
-				String g = String.format(Locale.CHINA, "%."+ mMaxFractionNum + "f", gap);
+				float gap = now - mLastValue;
+				String g = String.format(Locale.CHINA, "%."+ mMaxFractionNum + "f", Math.abs(gap));
 //				float minDelta = (float) Math.pow(0.1, mMaxFractionNum);
 				if (gap > 0) {
 					text = text + "¡ü" + g;

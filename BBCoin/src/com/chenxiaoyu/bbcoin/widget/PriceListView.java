@@ -41,6 +41,7 @@ import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
 import com.chenxiaoyu.bbcoin.model.CoinsPrice;
+import com.chenxiaoyu.bbcoin.service.AlarmManager;
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -53,6 +54,7 @@ public class PriceListView extends LinearLayout{
 
 	PullToRefreshScrollView mPullToRefreshScrollView;
 	LinearLayout mPriceListContainer;
+	List<SingleCoinView> mCoinViews;
 	OnItemClickListener mOnItemClickListener;
 	ILoadingLayout mPriceListLoadingLayout;
 	Context mContext;
@@ -70,7 +72,7 @@ public class PriceListView extends LinearLayout{
     		switch (msg.what) {
 			case 0:
 				if(mFetchDataTask == null){
-					mFetchDataTask = new FetchDataTask();
+					mFetchDataTask = new FetchDataTask(false);
 					mFetchDataTask.execute(0);
 				}
 				break;
@@ -106,14 +108,14 @@ public class PriceListView extends LinearLayout{
 
 	}
 	private void init(){
-		
+
 		mPullToRefreshScrollView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
 				
 				if(mFetchDataTask == null){
-					mFetchDataTask = new FetchDataTask();
+					mFetchDataTask = new FetchDataTask(true);
 					mFetchDataTask.execute(0);
 				}
 			}
@@ -125,12 +127,13 @@ public class PriceListView extends LinearLayout{
 				mHandler.sendEmptyMessage(0);
 			}
 		};
-
+		mCoinViews = new ArrayList<SingleCoinView>(Coin.COINS.length);
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1);
 		for(int i = 0;i < Coin.COINS.length; i++){
 			SingleCoinView view = new SingleCoinView(mContext);
 			view.setCoinID(i);
 			mPriceListContainer.addView(view, lp);
+			mCoinViews.add(view);
 			view.setOnClickListener(new View.OnClickListener() {
 				
 				@Override
@@ -169,7 +172,9 @@ public class PriceListView extends LinearLayout{
 	
 	
 	public void doRefresh(){
-//		mPriceListViewAdatper.doRefresh();
+		for (SingleCoinView view : mCoinViews) {
+			view.doRefresh();
+		}
 	}
 //	class PriceListViewAdatper extends BaseAdapter{
 //		
@@ -238,11 +243,19 @@ public class PriceListView extends LinearLayout{
 //    }
 	class FetchDataTask extends AsyncTask<Object, Object, Object>
     {
-
+		boolean needScroll;
+		public FetchDataTask(boolean needScroll) {
+			this.needScroll = needScroll;
+		}
     	@Override
     	protected void onPreExecute() {
     		super.onPreExecute();
-    		mPullToRefreshScrollView.setRefreshing();
+    		if (needScroll) {
+    			mPullToRefreshScrollView.setRefreshing();
+			}else {
+				BBCoinApp.MainActivity.setActionBarLoading(true);
+			}
+    		
     	}
 		@Override
 		protected Object doInBackground(Object... arg0) {
@@ -251,19 +264,21 @@ public class PriceListView extends LinearLayout{
 				DataCenter.getInstance().updateCoinsPrice(cp);
 			}
 			
-//			CoinStatus cs = Commu.getInstance().fetchSingleTradeList(CoinStatusView.CUR_COINID);
-//			if (cs != null) {
-//				DataCenter.getInstance().updateSingleTrade(cs);
-//			}
+			CoinStatus cs = Commu.getInstance().fetchSingleTradeList(CoinStatusView.CUR_COINID);
+			if (cs != null) {
+				DataCenter.getInstance().updateSingleTrade(cs);
+			}
 			return cp ;
 		}
 		
 		@Override
 		protected void onPostExecute(Object result) {
 			mPullToRefreshScrollView.onRefreshComplete();
+			BBCoinApp.MainActivity.setActionBarLoading(false);
 			doRefresh();
 			mFetchDataTask = null;
 			mLastUpdateTime = new Date();
+			AlarmManager.Instance.doCheckAndAlarm(mContext, DataCenter.getInstance().getCoinsPrice());
 			super.onPostExecute(result);
 		}
     }

@@ -45,7 +45,6 @@ public class Theme
 	public static void setCurrentThemeFromResources(Context c,int resId) throws IOException, JSONException
 	{
 		String text = IOUtils.readText(c, resId);
-		
 		JSONObject obj = new JSONObject(text);
 		
 		Theme theme = new Theme();
@@ -122,6 +121,7 @@ public class Theme
 			a.fromJSONObject(jsonAppearance);
 			
 			fMap.put(key, a);
+
 		}
 	}
 }

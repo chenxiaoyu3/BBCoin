@@ -7,11 +7,11 @@
 	    android:toYScale="1.2"
 	    android:pivotX="50%p"
 	    android:pivotY="60%p"
-	    android:duration="3000"
+	    android:duration="2500"
 	    />
     <alpha
 	    android:fromAlpha="1"
 	    android:toAlpha="0"
-	    android:duration="900"
+	    android:duration="500"
 	    android:startOffset="3000"/>
 </set>

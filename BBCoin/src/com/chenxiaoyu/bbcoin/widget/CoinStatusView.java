@@ -1,23 +1,18 @@
 package com.chenxiaoyu.bbcoin.widget;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.TimerTask;
 
 import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.KChartActivity;
-import com.chenxiaoyu.bbcoin.MainActivity;
 import com.chenxiaoyu.bbcoin.R;
-import com.chenxiaoyu.bbcoin.TimerManager;
-import com.chenxiaoyu.bbcoin.Utils;
 import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
-import com.chenxiaoyu.bbcoin.model.CoinsPrice;
 import com.chenxiaoyu.bbcoin.model.OnDataCenterUpdate;
 import com.chenxiaoyu.bbcoin.model.Order;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -27,15 +22,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 
@@ -46,7 +36,7 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 	TextView nameTextView;
 	PriceTextView priceTextView;
 	TextView buySumTextView, sellSumTextView;
-	Button kChartButton;
+	Button kChartButton, buyButton, sellButton;
 	Context context;
 
 	Date lastRefreshUITime;
@@ -63,8 +53,9 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 				priceTextView.setText(String.format("%.3f", DataCenter.getInstance().getCoinsPrice().prices.get(coinID).getPrice()));
 				buyOrdersView.removeAllViews();
 				sellOrdersView.removeAllViews();
-				CoinStatus cs = (CoinStatus)arg0.obj;
+				CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
 				float buySum = 0, sellSum = 0;
+				
 				for (Order order : cs.buyOrders) {
 					SingleOrderView view = new SingleOrderView(context);
 					view.setOrder(order);
@@ -118,6 +109,8 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 		this.kChartButton = (Button)findViewById(R.id.bt_coinstatus_chart);
 		this.buySumTextView = (TextView)findViewById(R.id.tv_orders_buySum);
 		this.sellSumTextView = (TextView)findViewById(R.id.tv_orders_sellSum);
+		this.buyButton = (Button)findViewById(R.id.bt_coinstatus_buy);
+		this.sellButton = (Button)findViewById(R.id.bt_coinstatus_sell);
 	}
 	private void init()
 	{
@@ -140,6 +133,27 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 				
 			}
 		};
+		this.buyButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				new AlertDialog.Builder(context)
+				.setMessage(R.string.msg_loginFirst)
+				.setPositiveButton(R.string.confirm, null)
+				.show();
+				
+			}
+		});
+		this.sellButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				new AlertDialog.Builder(context)
+				.setMessage(R.string.msg_loginFirst)
+				.setPositiveButton(R.string.confirm, null)
+				.show();
+			}
+		});
 	}
 
 	public int getCoinID() {
@@ -151,11 +165,10 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 	}
 	
 	public void doRefresh(){
-		CoinStatus cs = DataCenter.getInstance().getAllCoinStatus().get(coinID);
+		
 		Message msg = new Message();
 		msg.what = 0;
-		msg.obj = cs;
-		handler.sendMessageDelayed(msg, 200);
+		handler.sendMessageDelayed(msg, 100);
 	}
 	
 	@Override
@@ -164,19 +177,22 @@ public class CoinStatusView extends LinearLayout implements OnDataCenterUpdate{
 	}
 	@Override
 	public void onTradeListUpdate() {
-//		doRefresh();
+		doRefresh();
 	}
 	@Override
 	protected void onAttachedToWindow() {
-		TimerManager.Instance.addTask(mTimerTask);
+//		TimerManager.Instance.addTask(mTimerTask);
+		CUR_COINID = coinID;
 		if (DataCenter.getInstance().getAllCoinStatus().get(coinID).buyOrders.size() == 0) {
 			mTimerTask.run();
 		}
+		DataCenter.getInstance().addListener(this);
 		super.onAttachedToWindow();
 	}
 	@Override
 	protected void onDetachedFromWindow() {
-		TimerManager.Instance.removeTask(mTimerTask);
+//		TimerManager.Instance.removeTask(mTimerTask);
+		DataCenter.getInstance().removeListener(this);
 		super.onDetachedFromWindow();
 	}
 	

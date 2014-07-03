@@ -49,31 +49,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             />
-        <LinearLayout 
+
+        <TextView
+            android:id="@+id/tv_orders_buySum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <!--  
-            <com.chenxiaoyu.bbcoin.widget.AutofitTextView 
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:textSize="15sp"
-                android:textColor="@color/gray"
-                android:text="@string/buySum"/>
-                -->
-            <com.chenxiaoyu.bbcoin.widget.PriceTextView
-                android:id="@+id/tv_orders_buySum"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                />
-        </LinearLayout>
+            android:gravity="right"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            />
         
     </LinearLayout>
     <View
@@ -136,11 +121,10 @@
                 android:textColor="@color/gray"
                 android:text="@string/sellSum"/>
                 -->
-            <com.chenxiaoyu.bbcoin.widget.PriceTextView
+            <TextView
                 android:id="@+id/tv_orders_sellSum" 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="right"
                 android:textSize="15sp"
                 android:textColor="@color/white"

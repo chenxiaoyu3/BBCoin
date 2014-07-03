@@ -1,15 +1,10 @@
 package com.chenxiaoyu.bbcoin.widget;
 
 import java.lang.ref.SoftReference;
-import java.util.ArrayList;
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 
-
-import android.R.integer;
 import android.content.Context;
 
 import android.os.Handler;
@@ -29,6 +24,7 @@ import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.widget.CoinStatusView;
 import com.chenxiaoyu.bbcoin.widget.PriceListView;
 import com.chenxiaoyu.bbcoin.widget.SingleCoinView;
+import com.umeng.analytics.MobclickAgent;
 
 
 
@@ -73,6 +69,7 @@ public class TradeMarketView extends LinearLayout implements OnItemClickListener
         }
         
         mPriceListView.setOnListItemClickListener(this);
+        mCoinStatusView.doRefresh();
     }
     
     
@@ -105,6 +102,16 @@ public class TradeMarketView extends LinearLayout implements OnItemClickListener
 		mCoinStatusView.doRefresh();
 	}
 
+	@Override
+	protected void onAttachedToWindow() {
+		MobclickAgent.onEventBegin(mContext, "ViewTradeMarket");
+		super.onAttachedToWindow();
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		MobclickAgent.onEventEnd(mContext, "ViewTradeMarket");
+		super.onDetachedFromWindow();
+	}
 	
     
 

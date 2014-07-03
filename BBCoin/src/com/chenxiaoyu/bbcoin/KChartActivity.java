@@ -1,6 +1,5 @@
 package com.chenxiaoyu.bbcoin;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.stockchart.core.Area;
 import org.stockchart.core.Axis;
 import org.stockchart.core.Axis.ILabelFormatProvider;
 import org.stockchart.core.Axis.Side;
-import org.stockchart.core.Theme;
 import org.stockchart.series.BarSeries;
 import org.stockchart.series.StockSeries;
 
@@ -24,6 +22,7 @@ import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.ChartPoint;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.KChartType;
+import com.umeng.analytics.MobclickAgent;
 
 
 import android.os.AsyncTask;
@@ -71,6 +70,24 @@ public class KChartActivity extends SherlockActivity{
 		setSupportProgress(Window.PROGRESS_END);
 		Log.v(TAG, " onCreate");
 		
+	}
+	@Override
+	protected void onStart() {
+		MobclickAgent.onEventBegin(this, "ViewKChart");
+		super.onStart();
+	}
+	@Override
+	protected void onDestroy() {
+		MobclickAgent.onEventEnd(this, "ViewKChart");
+		super.onDestroy();
+	}
+	public void onResume() {
+    	super.onResume();
+    	MobclickAgent.onResume(this);
+    }
+	public void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 	
 	private void populateChart()
@@ -262,7 +279,7 @@ public class KChartActivity extends SherlockActivity{
 				ret = Utils.timeFormat(cal.getTime(), "MM/dd HH:00");
 				break;
 			case OneDay:
-				cal.add(Calendar.DAY_OF_MONTH, x-72);
+				cal.add(Calendar.DAY_OF_MONTH, x-90);
 				ret = Utils.timeFormat(cal.getTime(), "MM/dd");
 				break;
 			case FiveMin:

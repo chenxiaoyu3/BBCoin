@@ -11,8 +11,8 @@ public class SettingActivity extends SherlockPreferenceActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		getPreferenceManager().setSharedPreferencesName(PreferManager.PPEFER_FILE);
 		addPreferencesFromResource(R.xml.preference);
-		
 	}
 	
 	@Override

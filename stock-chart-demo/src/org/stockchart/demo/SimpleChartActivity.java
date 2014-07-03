@@ -1,7 +1,11 @@
 package org.stockchart.demo;
 
+import java.io.IOException;
+
+import org.json.JSONException;
 import org.stockchart.StockChartActivity;
 import org.stockchart.core.Area;
+import org.stockchart.core.Theme;
 import org.stockchart.series.LinearSeries;
 
 import android.graphics.Color;
@@ -20,7 +24,15 @@ public class SimpleChartActivity extends StockChartActivity
 	{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);		
-		
+		try {
+			Theme.setCurrentThemeFromResources(this, org.stockchart.R.raw.dark);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		populateChart();
 		this.getStockChartView().invalidate();
 	}

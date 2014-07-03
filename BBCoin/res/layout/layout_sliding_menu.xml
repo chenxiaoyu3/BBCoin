@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="@drawable/bg_main_4">
+    android:background="@drawable/bg_main_4"
+    >
+     <Button 
+        android:id="@+id/bt_slideMenu_qqlogon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableTop="@drawable/qqlogon2"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="@string/menu_qqlogon"
+        android:textSize="18sp"
+        style="@style/Widget.Styled.MenuButton"
+        android:drawablePadding="8dp"
+        android:layout_margin="18dp"
+        />
+     <View 
+	        android:layout_width="match_parent"
+	        android:layout_height="1dp"
+	        android:background="@color/gray_0"/>
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,21 +32,71 @@
             android:id="@+id/bt_slideMenu_priceOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_priceOverview"/>
+            android:text="@string/menu_priceOverview"
+            android:background="@drawable/bg_menubutton"
+            style="@style/Widget.Styled.MenuButton"/>
+        <View 
+	        android:layout_width="match_parent"
+	        android:layout_height="1dp"
+	        android:background="@color/gray_0"/>
         <Button 
             android:id="@+id/bt_slideMenu_tradeMarket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_tradeMarket"/>
+            android:text="@string/menu_tradeMarket"
+            android:background="@drawable/bg_menubutton"
+            style="@style/Widget.Styled.MenuButton"/>
+        
     </LinearLayout>
-    <ImageButton 
-        android:id="@+id/bt_slideMenu_setting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/v_slideMenu_buttons"
-		android:layout_alignParentLeft="true"
-		android:layout_margin="8dp"
-        android:src="@drawable/setting"
-        android:background="@android:color/transparent"/>
-
-</RelativeLayout>
+   
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_0"/>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="18dp"
+	        android:layout_marginBottom="28dp"
+	        android:orientation="horizontal"
+	        android:layout_alignParentBottom="true"
+	        >
+	        <Button 
+		        android:id="@+id/bt_slideMenu_setting"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+				android:layout_margin="8dp"
+		        android:drawableTop="@drawable/setting2"
+		        android:drawablePadding="5dp"
+		        android:textSize="13sp"
+		        android:text="@string/menu_setting"
+		        style="@style/Widget.Styled.MenuButton"/>
+	        <Button 
+		        android:id="@+id/bt_slideMenu_exit"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+				android:layout_margin="8dp"
+		        android:drawableTop="@drawable/exit"
+		        android:drawablePadding="5dp"
+		        android:textSize="13sp"
+		        android:text="@string/menu_quit"
+		        style="@style/Widget.Styled.MenuButton"/>
+	    </LinearLayout>
+        <TextView 
+            android:id="@+id/tv_slideMenu_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:textColor="@color/silver"
+            android:textSize="12sp"
+            android:layout_alignParentBottom="true"/>
+     </RelativeLayout>
+        
+</LinearLayout>
+   

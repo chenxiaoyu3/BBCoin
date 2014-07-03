@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.chenxiaoyu.bbcoin.AlarmSetActivity;
 import com.chenxiaoyu.bbcoin.BBCoinApp;
 import com.chenxiaoyu.bbcoin.DataCenter;
 import com.chenxiaoyu.bbcoin.R;
@@ -15,11 +16,14 @@ import com.chenxiaoyu.bbcoin.http.Commu;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.CoinStatus;
 import com.chenxiaoyu.bbcoin.model.CoinsPrice;
+import com.chenxiaoyu.bbcoin.service.AlarmManager;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import com.umeng.analytics.MobclickAgent;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -62,12 +66,14 @@ public class CoinTableView extends LinearLayout{
 	protected void onAttachedToWindow() {
 		Log.v(TAG, "attached");
 		TimerManager.Instance.addTask(mRefreshTask);
+		MobclickAgent.onEventBegin(mContext, "ViewCoinTable");
 		super.onAttachedToWindow();
 	}
 	@Override
 	protected void onDetachedFromWindow() {
 		Log.v(TAG, "Detached");
 		TimerManager.Instance.removeTask(mRefreshTask);
+		MobclickAgent.onEventEnd(mContext, "ViewCoinTable");
 		super.onDetachedFromWindow();
 	}
 	private void initID(){
@@ -93,6 +99,16 @@ public class CoinTableView extends LinearLayout{
 				@Override
 				public void onClick(View arg0) {
 					BBCoinApp.MainActivity.onCoinBlockClicked(  ((SingleCoinBlockView)arg0).mCoinID );
+				}
+			});
+			view.setOnLongClickListener(new OnLongClickListener() {
+				
+				@Override
+				public boolean onLongClick(View v) {
+					Intent i = new Intent(mContext, AlarmSetActivity.class);
+					i.putExtra("COIN_ID", ((SingleCoinBlockView)v).mCoinID);
+					mContext.startActivity(i);
+					return false;
 				}
 			});
 			row.addView(view,lp);
@@ -154,7 +170,10 @@ public class CoinTableView extends LinearLayout{
     		super.onPreExecute();
     		if (needScroll) {
 				mPullToRefreshScrollView.setRefreshing();
+			}else{
+				BBCoinApp.MainActivity.setActionBarLoading(true);
 			}
+    		
     	}
 		@Override
 		protected Object doInBackground(Object... arg0) {
@@ -176,8 +195,10 @@ public class CoinTableView extends LinearLayout{
 				}
 			}
 			mPullToRefreshScrollView.onRefreshComplete();
+			BBCoinApp.MainActivity.setActionBarLoading(false);
 			mFetchDataTask = null;
 			mPullToRefreshScrollView.getLoadingLayoutProxy().setLastUpdatedLabel(Utils.timeFormat(new Date(), "HH:mm:ss"));
+			AlarmManager.Instance.doCheckAndAlarm(mContext, DataCenter.getInstance().getCoinsPrice());
 		}
     }
 	

@@ -1,13 +1,12 @@
 package com.chenxiaoyu.bbcoin;
 
-import java.util.List;
-
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.chenxiaoyu.bbcoin.model.Coin;
 import com.chenxiaoyu.bbcoin.model.PriceAlarm;
 import com.chenxiaoyu.bbcoin.service.AlarmManager;
+import com.chenxiaoyu.bbcoin.service.BBCoinService;
 
 
 import android.os.Bundle;
@@ -28,15 +27,13 @@ public class AlarmSetActivity extends SherlockActivity{
 		
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.layout_actionbar_title);
-        ((TextView)getSupportActionBar().getCustomView().findViewById(R.id.tv_actionbarTitle)).setText(getString(R.string.set_alarm));
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
+		getSupportActionBar().setTitle(R.string.set_alarm);
 	}
 	
 	@Override
 	protected void onStart() {
 		mCoinID = getIntent().getIntExtra("COIN_ID", 0);
-		mTitleTextView.setText(Coin.sGetStrName(mCoinID));
+		mTitleTextView.setText(Coin.getStrNameWithChs(mCoinID));
 		
 		PriceAlarm f = AlarmManager.Instance.getPriceAlarm(this, mCoinID);
 		if (f != null) {
@@ -48,10 +45,10 @@ public class AlarmSetActivity extends SherlockActivity{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
-		menu.add(1, 1, 1,"Save")
-        .setIcon(R.drawable.ic_cab_done_holo_light)
-        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		menu.add(1, 2, 2, "Clear");
+		menu.add(1, 1, 1,"±£´æ")
+        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(1, 2, 2, "Çå³ý")
+		.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -61,8 +58,8 @@ public class AlarmSetActivity extends SherlockActivity{
 		int id = item.getItemId();
 		switch (id) {
 		case 1:
-			saveAlarm();
-			finish();
+			if( saveAlarm() )
+				finish();
 			break;
 		case 2:
 			mLessEditText.setText("0");
@@ -87,13 +84,17 @@ public class AlarmSetActivity extends SherlockActivity{
 		float lessThan = 0;
 		try {
 			lessThan = Float.valueOf(mLessEditText.getText().toString());
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		
 		float largerThan = 0;
 		try {
 			largerThan = Float.valueOf(mLargerEditText.getText().toString());
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
+
 		AlarmManager.Instance.setPriceAlarm(this, mCoinID, lessThan, largerThan);
+		BBCoinService.NeedStart(this);
 		Toast.makeText(this, R.string.alarm_succ, Toast.LENGTH_SHORT).show();
 		return true;
 	}
