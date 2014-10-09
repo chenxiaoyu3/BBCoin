@@ -9,7 +9,8 @@
 *.class
 
 # generated files
-bin/
+# need bin/ folder because the depencency
+#bin/
 gen/
 
 # Local configuration file (sdk path, etc)
