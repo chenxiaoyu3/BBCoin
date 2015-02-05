@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="preference_auto_refresh_list">
+        <item>10秒</item>
+        <item>30秒</item>
+        <item>5分钟</item>
+        <item>1小时</item>
+        <item>12小时</item>
+    </string-array>
+
+    <string-array name="preference_auto_refresh_listvalue">
+        <item>10</item>
+        <item>30</item>
+        <item>300</item>
+        <item>3600</item>
+        <item>43200</item>
+    </string-array>
+
+</resources>
